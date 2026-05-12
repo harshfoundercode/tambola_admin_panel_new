@@ -1,0 +1,530 @@
+/* ============================================
+   PLAYERS CSS - WHITE + BLUE + YELLOW THEME
+   Professional & Clean
+   ============================================ */
+
+.players-container {
+  padding: 24px 28px;
+  background: #F8FAFC;
+  min-height: 100vh;
+}
+
+/* ========== HEADER ========== */
+.players-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.players-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1E3A8A;
+  margin: 0 0 6px 0;
+}
+
+.players-subtitle {
+  font-size: 14px;
+  color: #64748B;
+  margin: 0;
+}
+
+.btn-add-player {
+  background: #FBBF24;
+  color: #1E3A8A;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 40px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-add-player:hover {
+  background: #F59E0B;
+  transform: translateY(-2px);
+}
+
+/* ========== STATS CARDS ========== */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+.stat-card {
+  background: #FFFFFF;
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border: 1px solid #E2E8F0;
+  transition: all 0.25s;
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+  border-color: #FBBF24;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+}
+
+.stat-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+}
+
+.stat-icon.blue {
+  background: #EFF6FF;
+  color: #1E3A8A;
+}
+
+.stat-icon.yellow {
+  background: #FEF3C7;
+  color: #FBBF24;
+}
+
+.stat-content h4 {
+  font-size: 13px;
+  font-weight: 500;
+  color: #64748B;
+  margin: 0 0 6px 0;
+}
+
+.stat-content p {
+  font-size: 28px;
+  font-weight: 800;
+  color: #1E3A8A;
+  margin: 0;
+}
+
+/* ========== FILTERS ========== */
+.filters-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.search-box {
+  flex: 1;
+  max-width: 350px;
+  display: flex;
+  align-items: center;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 40px;
+  padding: 8px 16px;
+  transition: all 0.2s;
+}
+
+.search-box:focus-within {
+  border-color: #FBBF24;
+  box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
+}
+
+.search-icon {
+  font-size: 16px;
+  color: #94A3B8;
+  margin-right: 10px;
+}
+
+.search-box input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  color: #1E3A8A;
+  background: transparent;
+}
+
+.search-box input::placeholder {
+  color: #CBD5E1;
+}
+
+.filter-tabs {
+  display: flex;
+  gap: 8px;
+}
+
+.filter-tab {
+  padding: 8px 20px;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 40px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #64748B;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.filter-tab:hover {
+  border-color: #FBBF24;
+  color: #1E3A8A;
+}
+
+.filter-tab.active {
+  background: #FBBF24;
+  color: #1E3A8A;
+  border-color: #FBBF24;
+}
+
+/* ========== TABLE ========== */
+.table-card {
+  background: #FFFFFF;
+  border-radius: 20px;
+  border: 1px solid #E2E8F0;
+  overflow: hidden;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 24px;
+  border-bottom: 1px solid #E2E8F0;
+  background: #F8FAFC;
+}
+
+.table-header h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1E3A8A;
+  margin: 0;
+}
+
+.table-count {
+  font-size: 12px;
+  color: #64748B;
+  background: #FFFFFF;
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid #E2E8F0;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.players-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.players-table th {
+  text-align: left;
+  padding: 14px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748B;
+  background: #FFFFFF;
+  border-bottom: 1px solid #E2E8F0;
+}
+
+.players-table td {
+  padding: 14px 16px;
+  font-size: 13px;
+  color: #1E3A8A;
+  border-bottom: 1px solid #F1F5F9;
+}
+
+.players-table tbody tr:hover {
+  background: #F8FAFC;
+}
+
+.player-name {
+  font-weight: 700;
+  color: #1E3A8A;
+}
+
+.tickets-count {
+  font-weight: 700;
+  color: #1E3A8A;
+}
+
+.amount-spent {
+  font-weight: 700;
+  color: #FBBF24;
+}
+
+/* Status Badges */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 30px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.status-active {
+  background: #DCFCE7;
+  color: #10B981;
+}
+
+.status-inactive {
+  background: #FEE2E2;
+  color: #EF4444;
+}
+
+/* Action column */
+.players-table th:last-child,
+.players-table td:last-child {
+  width: 1%;
+  white-space: nowrap;
+}
+
+/* Buttons wrapper */
+.action-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex-wrap: nowrap;
+}
+
+/* All buttons */
+.action-buttons button {
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 6px 10px;
+  height: 32px;
+  width: auto;          /* fixed width hata do */
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.action-view {
+  background: #EFF6FF;
+  color: #1E3A8A;
+}
+
+.action-view:hover {
+  background: #DBEAFE;
+  transform: scale(1.05);
+}
+
+.action-edit {
+  background: #FEF3C7;
+  color: #D97706;
+}
+
+.action-edit:hover {
+  background: #FDE68A;
+  transform: scale(1.05);
+}
+
+.action-delete {
+  background: #FEE2E2;
+  color: #EF4444;
+}
+
+.action-delete:hover {
+  background: #FECACA;
+  transform: scale(1.05);
+}
+
+/* No Data */
+.no-data {
+  text-align: center;
+  padding: 60px;
+  color: #94A3B8;
+}
+
+.no-data span {
+  font-size: 48px;
+  display: block;
+  margin-bottom: 16px;
+}
+
+.no-data p {
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-top: 1px solid #E2E8F0;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.page-btn {
+  padding: 8px 16px;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #1E3A8A;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.page-btn:hover:not(:disabled) {
+  border-color: #FBBF24;
+  background: #FEF3C7;
+}
+
+.page-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.page-numbers {
+  display: flex;
+  gap: 6px;
+}
+
+.page-number {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #1E3A8A;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.page-number:hover {
+  border-color: #FBBF24;
+  background: #FEF3C7;
+}
+
+.page-number.active {
+  background: #FBBF24;
+  color: #1E3A8A;
+  border-color: #FBBF24;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 1024px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .players-container {
+    padding: 16px;
+  }
+
+  .players-title {
+    font-size: 22px;
+  }
+
+  .stats-grid {
+    gap: 12px;
+  }
+
+  .stat-content p {
+    font-size: 22px;
+  }
+
+  .stat-icon {
+    width: 44px;
+    height: 44px;
+    font-size: 22px;
+  }
+
+  .filters-section {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-box {
+    max-width: 100%;
+  }
+
+  .filter-tabs {
+    justify-content: center;
+  }
+
+  .players-table th,
+  .players-table td {
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+
+  .pagination {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .action-buttons button {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
+
+  .page-numbers {
+    gap: 4px;
+  }
+
+  .page-number {
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
+  }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F1F5F9;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #FBBF24;
+}

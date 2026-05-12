@@ -1,0 +1,387 @@
+/* VideoManagement.css - Professional Version */
+
+.video-management {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background: #F8FAFC;
+  min-height: 100vh;
+}
+
+/* Header */
+.video-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.video-header h2 {
+  margin: 0;
+  color: #1E3A8A;
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.video-add-btn {
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  background: #1E3A8A;
+  color: white;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.video-add-btn:hover {
+  background: #3B82F6;
+  transform: translateY(-1px);
+}
+
+/* Videos Container */
+.videos-container {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+/* Loading and Empty States */
+.loading-state,
+.empty-state {
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.loading-state p,
+.empty-state p {
+  color: #64748B;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+/* Videos Table */
+.videos-table-container {
+  overflow-x: auto;
+}
+
+.videos-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.videos-table th {
+  background: #F8FAFC;
+  color: #374151;
+  font-weight: 600;
+  padding: 16px 12px;
+  text-align: left;
+  border-bottom: 2px solid #E2E8F0;
+  white-space: nowrap;
+}
+
+.videos-table td {
+  padding: 16px 12px;
+  border-bottom: 1px solid #E2E8F0;
+  vertical-align: middle;
+}
+
+.videos-table tbody tr:hover {
+  background: #F8FAFC;
+}
+
+/* Table Cell Styles */
+.name-cell {
+  font-weight: 500;
+  color: #374151;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.video-cell {
+  min-width: 150px;
+}
+
+.video-preview {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.video-thumbnail {
+  width: 60px;
+  height: 45px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid #E2E8F0;
+}
+
+.video-link {
+  color: #3B82F6;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 6px 12px;
+  border: 1px solid #3B82F6;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  transition: all 0.2s;
+}
+
+.video-link:hover {
+  background: #3B82F6;
+  color: white;
+}
+
+/* Status Badge */
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.status-badge.active {
+  background: #DCFCE7;
+  color: #166534;
+}
+
+.status-badge.inactive {
+  background: #FEE2E2;
+  color: #991B1B;
+}
+
+.date-cell {
+  color: #64748B;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.actions-cell {
+  white-space: nowrap;
+}
+
+.action-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  min-width: 80px;
+}
+
+.toggle-btn {
+  padding: 8px 16px;
+  font-weight: 600;
+}
+
+.toggle-btn.activate {
+  background: #DCFCE7;
+  color: #166534;
+  border: 1px solid #BBF7D0;
+}
+
+.toggle-btn.activate:hover:not(:disabled) {
+  background: #BBF7D0;
+  transform: translateY(-1px);
+}
+
+.toggle-btn.deactivate {
+  background: #FEE2E2;
+  color: #991B1B;
+  border: 1px solid #FECACA;
+}
+
+.toggle-btn.deactivate:hover:not(:disabled) {
+  background: #FECACA;
+  transform: translateY(-1px);
+}
+
+.toggle-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.view-btn {
+  background: #EFF6FF;
+  color: #1E40AF;
+  border: 1px solid #DBEAFE;
+}
+
+.view-btn:hover {
+  background: #DBEAFE;
+}
+
+/* Modal */
+.video-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.video-modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.video-modal-content h3 {
+  margin: 0 0 25px 0;
+  color: #1E3A8A;
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Form Styles */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #374151;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #E2E8F0;
+  border-radius: 8px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #3B82F6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-group input::placeholder {
+  color: #9CA3AF;
+}
+
+/* Modal Buttons */
+.video-modal-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 30px;
+  justify-content: flex-end;
+}
+
+.video-btn-submit {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #1E3A8A;
+  color: white;
+  font-weight: 500;
+  transition: all 0.2s;
+  min-width: 100px;
+}
+
+.video-btn-submit:hover:not(:disabled) {
+  background: #3B82F6;
+  transform: translateY(-1px);
+}
+
+.video-btn-submit:disabled {
+  background: #9CA3AF;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.video-btn-cancel {
+  padding: 12px 24px;
+  border: 2px solid #E2E8F0;
+  border-radius: 8px;
+  cursor: pointer;
+  background: white;
+  color: #64748B;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.video-btn-cancel:hover {
+  border-color: #CBD5E1;
+  background: #F8FAFC;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .video-management {
+    padding: 15px;
+  }
+
+  .video-header {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+
+  .videos-table {
+    font-size: 0.8rem;
+  }
+
+  .videos-table th,
+  .videos-table td {
+    padding: 12px 8px;
+  }
+
+  .video-preview {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .video-thumbnail {
+    width: 80px;
+    height: 60px;
+  }
+
+  .video-modal-content {
+    padding: 20px;
+    margin: 20px;
+  }
+
+  .video-modal-buttons {
+    flex-direction: column;
+  }
+
+  .video-btn-submit,
+  .video-btn-cancel {
+    width: 100%;
+  }
+}

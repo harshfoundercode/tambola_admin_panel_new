@@ -1,0 +1,85 @@
+/* Reset and Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  background:white;
+  overflow-x: hidden;
+}
+
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* Main Content Styles */
+.main-content {
+  flex: 1;
+  min-height: 100vh;
+  transition: margin-left 0.3s ease, width 0.3s ease;
+  background: white;
+  width: calc(100% - 280px);
+  margin-left: 280px;
+}
+
+.page-content {
+  padding: 10px;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Tablet Styles (769px - 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .main-content {
+    width: calc(100% - 240px);
+    margin-left: 240px;
+  }
+  
+  .page-content {
+    padding: 20px;
+  }
+}
+
+/* Desktop Styles (1025px and above) */
+@media (min-width: 1025px) {
+  .main-content {
+    width: calc(100% - 280px);
+    margin-left: 280px;
+  }
+}
+
+/* Mobile Styles (up to 768px) */
+@media (max-width: 768px) {
+  .main-content {
+    width: 100%;
+    margin-left: 0;
+    padding-top: 60px; /* Space for fixed navbar */
+  }
+  
+  .page-content {
+    padding: 15px;
+  }
+}
+
+/* Small Mobile Styles (up to 480px) */
+@media (max-width: 480px) {
+  .page-content {
+    padding: 12px;
+  }
+}
+
+/* Landscape Mode for Mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+  .main-content {
+    padding-top: 50px; /* Smaller navbar height in landscape */
+  }
+  
+  .page-content {
+    padding: 12px;
+  }
+}
