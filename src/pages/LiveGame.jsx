@@ -827,7 +827,7 @@ import { io } from "socket.io-client";
 import "../styles/liveGame.css";
 
 const TOTAL_NUMBERS = 90;
-const SOCKET_URL = "https://testingtambola.honeywithmoon.com";
+const SOCKET_URL = "https://api.luckyfunda.com";
 
 console.log("Using Socket URL:", SOCKET_URL);
 

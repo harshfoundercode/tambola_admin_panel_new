@@ -1,26 +1,27 @@
 import axios from "axios";
 
 // Testing URL
-const API_BASE_URL = "https://testingtambola.honeywithmoon.com/api";
+const API_BASE_URL = "https://api.luckyfunda.com/api";
 
-// Live URL
-// const API_BASE_URL = "https://tambola.honeywithmoon.com/api";
 
 const api = axios.create({
   baseURL: API_BASE_URL,
-  headers: {
-    "Content-Type": "application/json",
-  },
+ 
 });
 
-// Add token to requests
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
-    console.log("TOKEN =>", token);
+  console.log("TOKEN =>", token);
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  
+
+  if (!(config.data instanceof FormData)) {
+    config.headers["Content-Type"] = "application/json";
+  }
+  
   return config;
 });
 
@@ -74,8 +75,6 @@ export const stopGameAPI = async (round_id) => {
 
 // FIXED: Updated callNumberAPI to support manual numbers
 export const callNumberAPI = async (roundId, options = {}) => {
-  // If options has a number property, it's a manual call
-  // Otherwise it's an auto-call
   const payload = options.number ? { round_id: roundId, number: options.number } : { round_id: roundId };
   const response = await api.post("/game/call-number", payload);
   return response.data;
@@ -179,19 +178,15 @@ export const deletePrizeAPI = async (prize_id) => {
 
 /*============== Banner APIs ============*/
 
-// export const addBannerAPI = async (image_url) => {
-//   const res = await api.post("/admin/banner/add", { image_url });
-//   return res.data;
-// };
-
-// export const updateBannerAPI = async (id, image_url) => {
-//   const res = await api.put(`/admin/banner/${id}`, { image_url });
-//   return res.data;
-// };
-
 export const addBannerAPI = async (image_file) => {
   const formData = new FormData();
   formData.append('image', image_file);
+  
+  console.log("📤 Sending banner image:", image_file);
+  console.log("FormData entries:");
+  for (let pair of formData.entries()) {
+    console.log(pair[0], pair[1]);
+  }
   
   const res = await api.post("/admin/banner/add", formData, {
     headers: {
@@ -204,6 +199,8 @@ export const addBannerAPI = async (image_file) => {
 export const updateBannerAPI = async (id, image_file) => {
   const formData = new FormData();
   formData.append('image', image_file);
+  
+  console.log(`📤 Updating banner ${id} with image:`, image_file);
   
   const res = await api.put(`/admin/banner/${id}`, formData, {
     headers: {
@@ -225,16 +222,53 @@ export const deleteBannerAPI = async (id) => {
 
 /*============== Offer APIs ============*/
 
-export const addOfferAPI = async (image_url) => {
-  const formData = new FormData();
-  formData.append('image', image_url);
-  
-  const res = await api.post("/admin/offers/add", formData,{
-     headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
-  return res.data;
+// ✅ FIXED: Proper FormData handling with validation
+export const addOfferAPI = async (formDataOrFile) => {
+  try {
+    let formData;
+    
+    // ✅ Check karo ki already FormData hai ya File object
+    if (formDataOrFile instanceof FormData) {
+      formData = formDataOrFile;
+      console.log("📤 Received FormData object");
+    } else {
+      // Agar File object directly aaya hai
+      formData = new FormData();
+      formData.append('image', formDataOrFile);
+      console.log("📤 Received File object, created FormData");
+    }
+    
+    // ✅ Debug: Check karo FormData content
+    console.log("=== ADD OFFER - FormData Debug ===");
+    let hasImage = false;
+    for (let pair of formData.entries()) {
+      console.log(`Field: ${pair[0]}`);
+      console.log(`Value:`, pair[1]);
+      if (pair[1] instanceof File) {
+        hasImage = true;
+        console.log(`  File Name: ${pair[1].name}`);
+        console.log(`  File Size: ${pair[1].size} bytes`);
+        console.log(`  File Type: ${pair[1].type}`);
+      }
+    }
+    
+    if (!hasImage) {
+      console.error("❌ FormData mein image field nahi hai!");
+    }
+    
+    const res = await api.post("/admin/offers/add", formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    
+    console.log("✅ Offer Added Successfully:", res.data);
+    return res.data;
+    
+  } catch (error) {
+    console.error("❌ Error adding offer:", error.response?.data || error.message);
+    throw error;
+  }
 };
 
 export const getAllOffersAPI = async () => {
@@ -242,16 +276,44 @@ export const getAllOffersAPI = async () => {
   return res.data;
 };
 
-export const updateOfferAPI = async (id, image_url) => {
-   const formData = new FormData();
-  formData.append('image', image_url);
-
-  const res = await api.put(`/admin/offers/${id}`, formData,{
-     headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
-  return res.data;
+// ✅ FIXED: Update offer with proper FormData handling
+export const updateOfferAPI = async (id, formDataOrFile) => {
+  try {
+    let formData;
+    
+    // ✅ Check karo ki already FormData hai ya File object
+    if (formDataOrFile instanceof FormData) {
+      formData = formDataOrFile;
+      console.log(`📤 Updating offer ${id} with FormData`);
+    } else if (formDataOrFile instanceof File) {
+      formData = new FormData();
+      formData.append('image', formDataOrFile);
+      console.log(`📤 Updating offer ${id} with File object`);
+    } else {
+      // Agar kuch bhi nahi aaya (edit without new image)
+      formData = new FormData();
+      console.log(`📤 Updating offer ${id} without new image`);
+    }
+    
+    // ✅ Debug
+    console.log("=== UPDATE OFFER - FormData Debug ===");
+    for (let pair of formData.entries()) {
+      console.log(`Field: ${pair[0]}`, pair[1]);
+    }
+    
+    const res = await api.put(`/admin/offers/${id}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    
+    console.log("✅ Offer Updated Successfully:", res.data);
+    return res.data;
+    
+  } catch (error) {
+    console.error("❌ Error updating offer:", error.response?.data || error.message);
+    throw error;
+  }
 };
 
 export const deleteOfferAPI = async (id) => {
@@ -270,7 +332,7 @@ export const getUserDetailsAPI = async () => {
   return response.data;
 };
 
-/*============== Admin Winner APIs Not make api for  only test =============*/
+/*============== Admin Winner APIs =============*/
 
 // Force winner by number
 export const forceWinnerByNumberAPI = async (roundId, data) => {
