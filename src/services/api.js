@@ -6,7 +6,7 @@ const API_BASE_URL = "https://api.luckyfunda.com/api";
 
 const api = axios.create({
   baseURL: API_BASE_URL,
- 
+
 });
 
 api.interceptors.request.use((config) => {
@@ -16,12 +16,12 @@ api.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
-  
+
 
   if (!(config.data instanceof FormData)) {
     config.headers["Content-Type"] = "application/json";
   }
-  
+
   return config;
 });
 
@@ -181,13 +181,13 @@ export const deletePrizeAPI = async (prize_id) => {
 export const addBannerAPI = async (image_file) => {
   const formData = new FormData();
   formData.append('image', image_file);
-  
+
   console.log("📤 Sending banner image:", image_file);
   console.log("FormData entries:");
   for (let pair of formData.entries()) {
     console.log(pair[0], pair[1]);
   }
-  
+
   const res = await api.post("/admin/banner/add", formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
@@ -199,9 +199,9 @@ export const addBannerAPI = async (image_file) => {
 export const updateBannerAPI = async (id, image_file) => {
   const formData = new FormData();
   formData.append('image', image_file);
-  
+
   console.log(`📤 Updating banner ${id} with image:`, image_file);
-  
+
   const res = await api.put(`/admin/banner/${id}`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
@@ -226,7 +226,7 @@ export const deleteBannerAPI = async (id) => {
 export const addOfferAPI = async (formDataOrFile) => {
   try {
     let formData;
-    
+
     // ✅ Check karo ki already FormData hai ya File object
     if (formDataOrFile instanceof FormData) {
       formData = formDataOrFile;
@@ -237,7 +237,7 @@ export const addOfferAPI = async (formDataOrFile) => {
       formData.append('image', formDataOrFile);
       console.log("📤 Received File object, created FormData");
     }
-    
+
     // ✅ Debug: Check karo FormData content
     console.log("=== ADD OFFER - FormData Debug ===");
     let hasImage = false;
@@ -251,20 +251,20 @@ export const addOfferAPI = async (formDataOrFile) => {
         console.log(`  File Type: ${pair[1].type}`);
       }
     }
-    
+
     if (!hasImage) {
       console.error("❌ FormData mein image field nahi hai!");
     }
-    
+
     const res = await api.post("/admin/offers/add", formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     });
-    
+
     console.log("✅ Offer Added Successfully:", res.data);
     return res.data;
-    
+
   } catch (error) {
     console.error("❌ Error adding offer:", error.response?.data || error.message);
     throw error;
@@ -280,7 +280,7 @@ export const getAllOffersAPI = async () => {
 export const updateOfferAPI = async (id, formDataOrFile) => {
   try {
     let formData;
-    
+
     // ✅ Check karo ki already FormData hai ya File object
     if (formDataOrFile instanceof FormData) {
       formData = formDataOrFile;
@@ -294,22 +294,22 @@ export const updateOfferAPI = async (id, formDataOrFile) => {
       formData = new FormData();
       console.log(`📤 Updating offer ${id} without new image`);
     }
-    
+
     // ✅ Debug
     console.log("=== UPDATE OFFER - FormData Debug ===");
     for (let pair of formData.entries()) {
       console.log(`Field: ${pair[0]}`, pair[1]);
     }
-    
+
     const res = await api.put(`/admin/offers/${id}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     });
-    
+
     console.log("✅ Offer Updated Successfully:", res.data);
     return res.data;
-    
+
   } catch (error) {
     console.error("❌ Error updating offer:", error.response?.data || error.message);
     throw error;
@@ -389,6 +389,108 @@ export const updateFeedbackVideoAPI = async (videoId, videoData) => {
 export const getDashboardDataAPI = async () => {
   const response = await api.get("/admin/dashboard");
   return response;
+};
+
+
+
+/*============== How It Works APIs =============*/
+
+// Get current "How It Works" video
+export const getHowItWorksAPI = async () => {
+  try {
+    console.log("📡 Fetching How It Works video...");
+    const response = await api.get("/admin/how-it-works");
+    console.log("✅ How It Works Response:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error fetching How It Works:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+// Add  "How It Works" video
+export const howItWorksAddAPI = async (videoData) => {
+  try {
+    console.log("📤 Adding/Updating How It Works video:", videoData);
+    const response = await api.post("/admin/how-it-works/add", videoData);
+    console.log("✅ How It Works Add Response:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error adding How It Works video:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+// Update existing "How It Works" video
+export const updateHowItWorksAPI = async (id, videoData) => {
+  try {
+    console.log("📤 Updating How It Works video - ID:", id, "Data:", videoData);
+    const response = await api.put(`admin/how-it-works/${id}`, videoData);
+    console.log("✅ How It Works Update Response:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error updating How It Works video:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+
+/*============== Winners Banners APIs =============*/
+
+// Get current "winner baner" 
+export const getWinnerBannersAPI = async () => {
+  try {
+    const response = await api.get("/admin/winner-banner");
+    console.log("✅ Winner Banner Response:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error fetching Winner Banner:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+// Add new winner banner (FormData)
+export const addWinnerBannerAPI = async (imageFile) => {
+  try {
+    const formData = new FormData();
+    formData.append('image', imageFile);
+
+    console.log("📤 Adding Winner Banner - File:", imageFile.name, "Size:", imageFile.size);
+
+    const response = await api.put("/admin/winner-banner/add", formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    console.log("✅ Winner Banner Add Response:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error adding Winner Banner:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+// Update existing winner banner (FormData)
+export const updateWinnerBannerAPI = async (id, imageFile) => {
+  try {
+    const formData = new FormData();
+    formData.append('image', imageFile);
+
+    console.log(`📤 Updating Winner Banner ID ${id} - File:`, imageFile.name);
+
+    const response = await api.put(`/admin/winner-banner/${id}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    console.log("✅ Winner Banner Update Response:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error updating Winner Banner:", error.response?.data || error.message);
+    throw error;
+  }
 };
 
 export default api;

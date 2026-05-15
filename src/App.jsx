@@ -28,6 +28,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./pages/Login";
 import Layout from "./components/Layout";
 import "./App.css";
+import HowItWorksManager from "./pages/HowItsWorks";
+import WinnerBannerManager from "./pages/WinnerBanner";
 
 function App() {
   return (
@@ -200,6 +202,26 @@ function App() {
             <ProtectedRoute>
               <Layout>
                 <Videos />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/how-it-works"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <HowItWorksManager />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/winner-banner"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <WinnerBannerManager />
               </Layout>
             </ProtectedRoute>
           }

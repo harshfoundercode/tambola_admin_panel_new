@@ -53,6 +53,8 @@ function Sidebar() {
     { path: "/policies", name: "Policies", icon: "📄" },
 
     { path: "/videos", name: "Videos", icon: "🎥" },
+    { path: "/how-it-works", name: "How it works", icon: "ℹ️" },
+    { path: "/winner-banner", name: "Winner Banner", icon: "📸" },
   ];
 
   return (
