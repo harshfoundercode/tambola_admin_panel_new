@@ -3,6 +3,8 @@ import axios from "axios";
 // Testing URL
 const API_BASE_URL = "https://api.luckyfunda.com/api";
 
+const UPLOAD_BASE_URL = "https://api.luckyfunda.com";
+
 
 const api = axios.create({
   baseURL: API_BASE_URL,

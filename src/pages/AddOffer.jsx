@@ -420,7 +420,7 @@ import { getAllOffersAPI, addOfferAPI, updateOfferAPI, deleteOfferAPI } from "..
 import { toast } from "react-toastify";
 import tambolaLogo from "../assets/tambolaLogo.jpeg";
 
-const BASE_URL = "https://testingtambola.honeywithmoon.com";
+const BASE_URL = "https://api.luckyfunda.com";
 
 const AddOffer = () => {
   const [offers, setOffers] = useState([]);
