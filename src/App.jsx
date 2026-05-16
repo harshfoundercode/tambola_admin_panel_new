@@ -30,6 +30,7 @@ import Layout from "./components/Layout";
 import "./App.css";
 import HowItWorksManager from "./pages/HowItsWorks";
 import WinnerBannerManager from "./pages/WinnerBanner";
+import WithdrawalRequests from "./pages/withdrawRequest";
 
 function App() {
   return (
@@ -265,6 +266,16 @@ function App() {
             <ProtectedRoute>
               <Layout>
                 <Profile />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+         <Route
+          path="/withdraw-request"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <WithdrawalRequests />
               </Layout>
             </ProtectedRoute>
           }
