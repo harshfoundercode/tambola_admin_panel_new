@@ -495,4 +495,32 @@ export const updateWinnerBannerAPI = async (id, imageFile) => {
   }
 };
 
+
+/*============== Exporting API instance =============*/
+
+// Get "withdraw requests" 
+export const getWithdrawRequestsAPI = async (page = 1, limit = 10) => {
+  try {
+    const response = await api.get(`/wallet/admin/withdrawals?page=${page}&limit=${limit}`);
+    console.log("✅ Get Withdraw req Response:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error fetching withdraw req:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+// Change withdraw request status (approve/reject)
+export const changeWithdrawReqStatusAPI = async (data) => {
+  try {
+    console.log("📤 Updating withdraw request status:", data);
+    const response = await api.post("/wallet/admin/withdrawals/update-status", data);
+    console.log("✅ Change status Response:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error changing status of withdraw req:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
 export default api;

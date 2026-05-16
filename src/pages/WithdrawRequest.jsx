@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   HiOutlineCheck,
   HiOutlineX,
@@ -15,181 +15,29 @@ import {
   HiOutlineShieldCheck,
   HiOutlineCurrencyRupee
 } from "react-icons/hi";
-import  styles from  "../styles/WithdrawalRequests.module.css";
-
-
-// ==================== STATIC DATA ====================
-const STATIC_WITHDRAWAL_REQUESTS = [
-  // ... SAME DATA AS BEFORE (unchanged) ...
-  {
-    id: 101,
-    request_id: "WD-2026001",
-    user_id: 5,
-    user_name: "Abhee Singh",
-    phone: "9555602293",
-    email: "abhee@example.com",
-    amount: "5000.00",
-    method: "bank",
-    status: "pending",
-    account_holder_name: "Abhee Singh",
-    bank_name: "Bank of Baroda",
-    account_number: "XXXX890",
-    ifsc_code: "BARB0HAZARA",
-    upi_id: null,
-    transaction_id: null,
-    rejection_reason: null,
-    created_at: "2026-05-16T06:03:48.000Z",
-    updated_at: null
-  },
-  {
-    id: 102,
-    request_id: "WD-2026002",
-    user_id: 8,
-    user_name: "Rahul Sharma",
-    phone: "9876543210",
-    email: "rahul@example.com",
-    amount: "1500.00",
-    method: "upi",
-    status: "pending",
-    account_holder_name: null,
-    bank_name: null,
-    account_number: null,
-    ifsc_code: null,
-    upi_id: "rahul@upi",
-    transaction_id: null,
-    rejection_reason: null,
-    created_at: "2026-05-16T04:30:22.000Z",
-    updated_at: null
-  },
-  {
-    id: 103,
-    request_id: "WD-2026003",
-    user_id: 12,
-    user_name: "Priya Patel",
-    phone: "8765432109",
-    email: "priya@example.com",
-    amount: "10000.00",
-    method: "bank",
-    status: "approved",
-    account_holder_name: "Priya Patel",
-    bank_name: "HDFC Bank",
-    account_number: "XXXX567",
-    ifsc_code: "HDFC0001234",
-    upi_id: null,
-    transaction_id: "TXN20260516123456",
-    rejection_reason: null,
-    created_at: "2026-05-15T14:20:10.000Z",
-    updated_at: "2026-05-15T16:45:30.000Z",
-    approved_at: "2026-05-15T16:45:30.000Z"
-  },
-  {
-    id: 104,
-    request_id: "WD-2026004",
-    user_id: 15,
-    user_name: "Amit Kumar",
-    phone: "7654321098",
-    email: "amit@example.com",
-    amount: "2500.00",
-    method: "upi",
-    status: "rejected",
-    account_holder_name: null,
-    bank_name: null,
-    account_number: null,
-    ifsc_code: null,
-    upi_id: "amit@upi",
-    transaction_id: null,
-    rejection_reason: "Insufficient balance in wallet",
-    created_at: "2026-05-15T11:10:05.000Z",
-    updated_at: "2026-05-15T12:30:45.000Z",
-    rejected_at: "2026-05-15T12:30:45.000Z"
-  },
-  {
-    id: 105,
-    request_id: "WD-2026005",
-    user_id: 20,
-    user_name: "Sneha Gupta",
-    phone: "6543210987",
-    email: "sneha@example.com",
-    amount: "7500.00",
-    method: "bank",
-    status: "pending",
-    account_holder_name: "Sneha Gupta",
-    bank_name: "ICICI Bank",
-    account_number: "XXXX234",
-    ifsc_code: "ICIC0000456",
-    upi_id: null,
-    transaction_id: null,
-    rejection_reason: null,
-    created_at: "2026-05-16T08:00:15.000Z",
-    updated_at: null
-  },
-  {
-    id: 106,
-    request_id: "WD-2026006",
-    user_id: 25,
-    user_name: "Vikram Yadav",
-    phone: "5432109876",
-    email: "vikram@example.com",
-    amount: "35000.00",
-    method: "upi",
-    status: "approved",
-    account_holder_name: null,
-    bank_name: null,
-    account_number: null,
-    ifsc_code: null,
-    upi_id: "vikram@upi",
-    transaction_id: "TXN20260515987654",
-    rejection_reason: null,
-    created_at: "2026-05-14T09:30:00.000Z",
-    updated_at: "2026-05-14T15:20:00.000Z",
-    approved_at: "2026-05-14T15:20:00.000Z"
-  },
-  {
-    id: 107,
-    request_id: "WD-2026007",
-    user_id: 30,
-    user_name: "Deepak Mishra",
-    phone: "4321098765",
-    email: "deepak@example.com",
-    amount: "1200.00",
-    method: "bank",
-    status: "rejected",
-    account_holder_name: "Deepak Mishra",
-    bank_name: "SBI Bank",
-    account_number: "XXXX901",
-    ifsc_code: "SBIN0000789",
-    upi_id: null,
-    transaction_id: null,
-    rejection_reason: "KYC not verified",
-    created_at: "2026-05-14T07:15:30.000Z",
-    updated_at: "2026-05-14T10:45:00.000Z",
-    rejected_at: "2026-05-14T10:45:00.000Z"
-  },
-  {
-    id: 108,
-    request_id: "WD-2026008",
-    user_id: 35,
-    user_name: "Meera Reddy",
-    phone: "3210987654",
-    email: "meera@example.com",
-    amount: "20000.00",
-    method: "upi",
-    status: "pending",
-    account_holder_name: null,
-    bank_name: null,
-    account_number: null,
-    ifsc_code: null,
-    upi_id: "meera@upi",
-    transaction_id: null,
-    rejection_reason: null,
-    created_at: "2026-05-16T09:45:00.000Z",
-    updated_at: null
-  }
-];
+import styles from "../styles/WithdrawalRequests.module.css";
+import { getWithdrawRequestsAPI, changeWithdrawReqStatusAPI } from "../services/api"; // Adjust import path
 
 function WithdrawalRequests() {
-  const [requests, setRequests] = useState(STATIC_WITHDRAWAL_REQUESTS);
-  const [loading, setLoading] = useState(false);
+  // State for API data
+  const [requests, setRequests] = useState([]);
+  const [stats, setStats] = useState({
+    total_requests: 0,
+    pending_requests: "0",
+    approved_requests: "0",
+    rejected_requests: "0",
+    total_amount: "0",
+    today_requests: "0"
+  });
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 10,
+    total: 0,
+    total_pages: 1
+  });
+
+  // UI States
+  const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRequest, setSelectedRequest] = useState(null);
@@ -200,45 +48,167 @@ function WithdrawalRequests() {
   const [amountFilter, setAmountFilter] = useState({ min: "", max: "" });
   const [notification, setNotification] = useState({ show: false, message: "", type: "" });
 
-  const summary = {
-    total_requests: requests.length,
-    pending_requests: requests.filter(r => r.status === 'pending').length,
-    approved_requests: requests.filter(r => r.status === 'approved').length,
-    rejected_requests: requests.filter(r => r.status === 'rejected').length,
-    total_amount: requests.reduce((sum, r) => sum + (parseFloat(r.amount) || 0), 0),
-    pending_amount: requests.filter(r => r.status === 'pending').reduce((sum, r) => sum + (parseFloat(r.amount) || 0), 0),
+  // Map API data to component structure
+  const mapApiDataToRequest = (item) => ({
+    id: item.withdrawal_id,
+    request_id: `WD-${String(item.withdrawal_id).padStart(4, '0')}`,
+    user_id: item.user_id,
+    user_name: item.name || `${item.first_name || ''} ${item.last_name || ''}`.trim() || 'Unknown User',
+    phone: item.phone || 'N/A',
+    email: item.email || '',
+    amount: item.amount,
+    method: item.method,
+    status: item.status,
+    account_holder_name: item.account_holder_name,
+    bank_name: item.bank_name,
+    account_number: item.account_number ? `XXXX${item.account_number.slice(-4)}` : null,
+    ifsc_code: item.ifsc_code,
+    upi_id: item.upi_id,
+    transaction_id: item.transaction_id,
+    rejection_reason: item.reject_reason,
+    created_at: item.createdAt,
+    updated_at: item.updatedAt,
+    approved_at: item.status === 'approved' ? item.updatedAt : null,
+    rejected_at: item.status === 'rejected' ? item.updatedAt : null,
+    kyc_status: item.kyc_status,
+    wallet_balance: item.wallet_balance,
+    raw_account_number: item.account_number,
+    raw_upi_id: item.upi_id
+  });
+
+  // Fetch withdrawal requests from API
+  const fetchWithdrawals = async (page = 1) => {
+    setLoading(true);
+    try {
+      const result = await getWithdrawRequestsAPI(page, pagination.limit);
+      console.log("API Response:", result);
+
+      if (result) {
+        // Map API data to component structure
+        const mappedData = (result.data || []).map(mapApiDataToRequest);
+        
+        setRequests(mappedData);
+        setStats(result.stats || {
+          total_requests: mappedData.length,
+          pending_requests: String(mappedData.filter(r => r.status === 'pending').length),
+          approved_requests: String(mappedData.filter(r => r.status === 'approved').length),
+          rejected_requests: String(mappedData.filter(r => r.status === 'rejected').length),
+          total_amount: String(mappedData.reduce((sum, r) => sum + (parseFloat(r.amount) || 0), 0)),
+          today_requests: String(mappedData.length)
+        });
+        setPagination(result.pagination || pagination);
+      } else {
+        showNotification("No data received from API", "error");
+      }
+    } catch (error) {
+      console.error("Error fetching withdrawals:", error);
+      showNotification(error.response?.data?.message || error.message || "Failed to fetch withdrawal requests", "error");
+    } finally {
+      setLoading(false);
+    }
   };
 
+  // Approve withdrawal via API
+  const handleApprove = async (requestId) => {
+    setActionLoading(true);
+    try {
+      const statusData = {
+        withdrawal_id: requestId,
+        status: "approved"
+      };
+
+      console.log("Approving withdrawal:", statusData);
+      const result = await changeWithdrawReqStatusAPI(statusData);
+      console.log("Approve Response:", result);
+
+      if (result) {
+        // Update local state
+        setRequests(prev => prev.map(req => 
+          req.id === requestId ? { 
+            ...req, 
+            status: 'approved', 
+            approved_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+            transaction_id: result.transaction_id || req.transaction_id
+          } : req
+        ));
+        
+        // Refresh stats
+        await fetchWithdrawals(pagination.page);
+        showNotification("Withdrawal approved successfully!", "success");
+      }
+    } catch (error) {
+      console.error("Error approving withdrawal:", error);
+      showNotification(error.response?.data?.message || error.message || "Failed to approve withdrawal", "error");
+    } finally {
+      setActionLoading(false);
+      setModalType(null);
+      setSelectedRequest(null);
+    }
+  };
+
+  // Reject withdrawal via API
+  const handleReject = async (requestId, reason) => {
+    if (!reason || !reason.trim()) {
+      showNotification("Please provide a rejection reason", "error");
+      return;
+    }
+    
+    setActionLoading(true);
+    try {
+      const statusData = {
+        withdrawal_id: requestId,
+        status: "rejected",
+        reject_reason: reason
+      };
+
+      console.log("Rejecting withdrawal:", statusData);
+      const result = await changeWithdrawReqStatusAPI(statusData);
+      console.log("Reject Response:", result);
+
+      if (result) {
+        // Update local state
+        setRequests(prev => prev.map(req => 
+          req.id === requestId ? { 
+            ...req, 
+            status: 'rejected', 
+            rejected_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+            rejection_reason: reason 
+          } : req
+        ));
+        
+        // Refresh stats
+        await fetchWithdrawals(pagination.page);
+        showNotification("Withdrawal rejected successfully!", "error");
+      }
+    } catch (error) {
+      console.error("Error rejecting withdrawal:", error);
+      showNotification(error.response?.data?.message || error.message || "Failed to reject withdrawal", "error");
+    } finally {
+      setActionLoading(false);
+      setModalType(null);
+      setSelectedRequest(null);
+      setRejectReason("");
+    }
+  };
+
+  // Fetch data on component mount
+  useEffect(() => {
+    fetchWithdrawals(1);
+  }, []);
+
   const handleRefresh = () => {
-    setLoading(true);
-    setTimeout(() => { setLoading(false); showNotification("Data refreshed!", "success"); }, 1000);
+    fetchWithdrawals(pagination.page);
+  };
+
+  const handlePageChange = (newPage) => {
+    fetchWithdrawals(newPage);
   };
 
   const showNotification = (message, type) => {
     setNotification({ show: true, message, type });
     setTimeout(() => setNotification({ show: false, message: "", type: "" }), 3000);
-  };
-
-  const handleApprove = (requestId) => {
-    setActionLoading(true);
-    setTimeout(() => {
-      setRequests(prev => prev.map(req => 
-        req.id === requestId ? { ...req, status: 'approved', approved_at: new Date().toISOString(), transaction_id: `TXN${Date.now()}` } : req
-      ));
-      setActionLoading(false); setModalType(null); setSelectedRequest(null);
-      showNotification("Withdrawal approved!", "success");
-    }, 1000);
-  };
-
-  const handleReject = (requestId, reason) => {
-    setActionLoading(true);
-    setTimeout(() => {
-      setRequests(prev => prev.map(req => 
-        req.id === requestId ? { ...req, status: 'rejected', rejected_at: new Date().toISOString(), rejection_reason: reason || "No reason" } : req
-      ));
-      setActionLoading(false); setModalType(null); setSelectedRequest(null); setRejectReason("");
-      showNotification("Withdrawal rejected!", "error");
-    }, 1000);
   };
 
   const openRejectModal = (req) => { setSelectedRequest(req); setRejectReason(""); setModalType("reject"); };
@@ -248,15 +218,27 @@ function WithdrawalRequests() {
 
   const getFilteredRequests = () => {
     let filtered = [...requests];
-    if (filter !== "all") filtered = filtered.filter(req => filter === "approved" ? req.status === "approved" : filter === "rejected" ? req.status === "rejected" : req.status === filter);
+    if (filter !== "all") {
+      filtered = filtered.filter(req => 
+        filter === "approved" ? req.status === "approved" : 
+        filter === "rejected" ? req.status === "rejected" : 
+        req.status === filter
+      );
+    }
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
-      filtered = filtered.filter(req => req.user_name?.toLowerCase().includes(term) || req.phone?.includes(term) || req.email?.toLowerCase().includes(term) || req.request_id?.toLowerCase().includes(term));
+      filtered = filtered.filter(req => 
+        req.user_name?.toLowerCase().includes(term) || 
+        req.phone?.includes(term) || 
+        req.email?.toLowerCase().includes(term) || 
+        req.request_id?.toLowerCase().includes(term)
+      );
     }
     if (amountFilter.min) filtered = filtered.filter(req => parseFloat(req.amount) >= parseFloat(amountFilter.min));
     if (amountFilter.max) filtered = filtered.filter(req => parseFloat(req.amount) <= parseFloat(amountFilter.max));
     if (dateFilter !== "all") {
-      const now = new Date(); const filterDate = new Date();
+      const now = new Date(); 
+      const filterDate = new Date();
       if (dateFilter === "today") filterDate.setHours(0,0,0,0);
       else if (dateFilter === "week") filterDate.setDate(now.getDate()-7);
       else if (dateFilter === "month") filterDate.setMonth(now.getMonth()-1);
@@ -269,8 +251,19 @@ function WithdrawalRequests() {
     if (!dateString) return { full: "N/A", relative: "N/A" };
     const date = new Date(dateString);
     const diffHours = Math.floor(Math.abs(new Date() - date) / 3600000);
-    let relative = diffHours < 1 ? `${Math.floor(Math.abs(new Date() - date) / 60000)} min ago` : diffHours < 24 ? `${diffHours} hours ago` : `${Math.floor(diffHours/24)} days ago`;
-    return { full: date.toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }), relative };
+    let relative = diffHours < 1 ? `${Math.floor(Math.abs(new Date() - date) / 60000)} min ago` : 
+                   diffHours < 24 ? `${diffHours} hours ago` : 
+                   `${Math.floor(diffHours/24)} days ago`;
+    return { 
+      full: date.toLocaleDateString('en-IN', { 
+        day:'numeric', 
+        month:'short', 
+        year:'numeric', 
+        hour:'2-digit', 
+        minute:'2-digit' 
+      }), 
+      relative 
+    };
   };
 
   const formatCurrency = (amount) => `₹${parseFloat(amount||0).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2})}`;
@@ -322,12 +315,12 @@ function WithdrawalRequests() {
         {/* Stats */}
         <div className={styles.statsGrid}>
           {[
-            {label:'Total',icon:<HiOutlineDocumentText/>,iconClass:styles.iconIndigo,value:summary.total_requests,sub:'All requests',color:styles.textGray},
-            {label:'Pending',icon:<HiOutlineClock/>,iconClass:styles.iconAmber,value:summary.pending_requests,sub:`${formatCurrency(summary.pending_amount)} pending`,color:styles.textAmber},
-            {label:'Approved',icon:<HiOutlineCheck/>,iconClass:styles.iconEmerald,value:summary.approved_requests,sub:'Processed',color:styles.textEmerald},
-            {label:'Rejected',icon:<HiOutlineX/>,iconClass:styles.iconRed,value:summary.rejected_requests,sub:'Declined',color:styles.textRed},
-            {label:'Total Value',icon:<HiOutlineCurrencyRupee/>,iconClass:styles.iconViolet,value:formatCurrency(summary.total_amount),sub:'All requests',color:styles.textViolet},
-            {label:'Today',icon:<HiOutlineShieldCheck/>,iconClass:styles.iconBlue,value:requests.filter(r=>{const t=new Date();t.setHours(0,0,0,0);return new Date(r.created_at)>=t}).length,sub:'New today',color:styles.textBlue},
+            {label:'Total',icon:<HiOutlineDocumentText/>,iconClass:styles.iconIndigo,value:stats.total_requests,sub:'All requests',color:styles.textGray},
+            {label:'Pending',icon:<HiOutlineClock/>,iconClass:styles.iconAmber,value:stats.pending_requests,sub:`${formatCurrency(stats.pending_requests)} pending`,color:styles.textAmber},
+            {label:'Approved',icon:<HiOutlineCheck/>,iconClass:styles.iconEmerald,value:stats.approved_requests,sub:'Processed',color:styles.textEmerald},
+            {label:'Rejected',icon:<HiOutlineX/>,iconClass:styles.iconRed,value:stats.rejected_requests,sub:'Declined',color:styles.textRed},
+            {label:'Total Value',icon:<HiOutlineCurrencyRupee/>,iconClass:styles.iconViolet,value:formatCurrency(stats.total_amount),sub:'All requests',color:styles.textViolet},
+            {label:'Today',icon:<HiOutlineShieldCheck/>,iconClass:styles.iconBlue,value:stats.today_requests,sub:'New today',color:styles.textBlue},
           ].map((s,i)=>(
             <div key={i} className={styles.statCard}>
               <div className={styles.statCardHeader}>
@@ -344,10 +337,10 @@ function WithdrawalRequests() {
         <div className={styles.filtersContainer}>
           <div className={styles.filterTabs}>
             {[
-              {key:'all',label:'All',count:summary.total_requests,activeClass:styles.filterTabAll},
-              {key:'pending',label:'Pending',count:summary.pending_requests,activeClass:styles.filterTabPending,icon:<HiOutlineClock size={16}/>},
-              {key:'approved',label:'Approved',count:summary.approved_requests,activeClass:styles.filterTabApproved,icon:<HiOutlineCheck size={16}/>},
-              {key:'rejected',label:'Rejected',count:summary.rejected_requests,activeClass:styles.filterTabRejected,icon:<HiOutlineX size={16}/>},
+              {key:'all',label:'All',count:parseInt(stats.total_requests),activeClass:styles.filterTabAll},
+              {key:'pending',label:'Pending',count:parseInt(stats.pending_requests),activeClass:styles.filterTabPending,icon:<HiOutlineClock size={16}/>},
+              {key:'approved',label:'Approved',count:parseInt(stats.approved_requests),activeClass:styles.filterTabApproved,icon:<HiOutlineCheck size={16}/>},
+              {key:'rejected',label:'Rejected',count:parseInt(stats.rejected_requests),activeClass:styles.filterTabRejected,icon:<HiOutlineX size={16}/>},
             ].map(tab=>(
               <button key={tab.key} onClick={()=>setFilter(tab.key)}
                 className={`${styles.filterTab} ${filter===tab.key ? `${styles.filterTabActive} ${tab.activeClass}` : ''}`}>
@@ -383,6 +376,29 @@ function WithdrawalRequests() {
             )}
           </div>
         </div>
+
+        {/* Pagination */}
+        {pagination.total_pages > 1 && (
+          <div className={styles.paginationContainer}>
+            <button 
+              onClick={() => handlePageChange(pagination.page - 1)}
+              disabled={pagination.page <= 1}
+              className={styles.pageButton}
+            >
+              ← Previous
+            </button>
+            <span className={styles.pageInfo}>
+              Page {pagination.page} of {pagination.total_pages}
+            </span>
+            <button 
+              onClick={() => handlePageChange(pagination.page + 1)}
+              disabled={pagination.page >= pagination.total_pages}
+              className={styles.pageButton}
+            >
+              Next →
+            </button>
+          </div>
+        )}
 
         {/* Result count */}
         <div className={styles.resultCount}>
@@ -480,6 +496,13 @@ function WithdrawalRequests() {
                     <div><p className={styles.infoLabel}>Phone</p><p className={styles.infoValue}>{selectedRequest.phone}</p></div>
                     <div><p className={styles.infoLabel}>Email</p><p className={styles.infoValue}>{selectedRequest.email||'N/A'}</p></div>
                     <div><p className={styles.infoLabel}>User ID</p><p className={styles.infoValue}>#{selectedRequest.user_id}</p></div>
+                    {selectedRequest.kyc_status && (
+                      <div><p className={styles.infoLabel}>KYC Status</p>
+                        <span className={selectedRequest.kyc_status === 'verified' ? styles.textEmerald : styles.textAmber}>
+                          {selectedRequest.kyc_status}
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className={styles.modalSection}><h3 className={styles.sectionTitle}>Withdrawal Information</h3>
@@ -493,6 +516,9 @@ function WithdrawalRequests() {
                       </span>
                     </div>
                     <div><p className={styles.infoLabel}>Requested On</p><p className={styles.infoValue}>{formatDate(selectedRequest.created_at).full}</p></div>
+                    {selectedRequest.wallet_balance && (
+                      <div><p className={styles.infoLabel}>Wallet Balance</p><p className={styles.infoValue}>{formatCurrency(selectedRequest.wallet_balance)}</p></div>
+                    )}
                   </div>
                 </div>
                 <div className={styles.modalSection}><h3 className={styles.sectionTitle}>Payment Details</h3>
@@ -500,11 +526,11 @@ function WithdrawalRequests() {
                     <div className={styles.bankDetails} style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:'0.75rem'}}>
                       <div><p style={{fontSize:'0.75rem',color:'#2563eb'}}>Account Holder</p><p className={styles.infoValue}>{selectedRequest.account_holder_name}</p></div>
                       <div><p style={{fontSize:'0.75rem',color:'#2563eb'}}>Bank Name</p><p className={styles.infoValue}>{selectedRequest.bank_name}</p></div>
-                      <div><p style={{fontSize:'0.75rem',color:'#2563eb'}}>Account No.</p><p className={styles.infoValue} style={{fontFamily:'monospace'}}>{selectedRequest.account_number}</p></div>
+                      <div><p style={{fontSize:'0.75rem',color:'#2563eb'}}>Account No.</p><p className={styles.infoValue} style={{fontFamily:'monospace'}}>{selectedRequest.raw_account_number || selectedRequest.account_number}</p></div>
                       <div><p style={{fontSize:'0.75rem',color:'#2563eb'}}>IFSC</p><p className={styles.infoValue} style={{fontFamily:'monospace'}}>{selectedRequest.ifsc_code}</p></div>
                     </div>
                   ) : (
-                    <div className={styles.upiDetails}><p style={{fontSize:'0.75rem',color:'#7c3aed'}}>UPI ID</p><p className={styles.infoValue} style={{fontFamily:'monospace'}}>{selectedRequest.upi_id}</p></div>
+                    <div className={styles.upiDetails}><p style={{fontSize:'0.75rem',color:'#7c3aed'}}>UPI ID</p><p className={styles.infoValue} style={{fontFamily:'monospace'}}>{selectedRequest.raw_upi_id || selectedRequest.upi_id}</p></div>
                   )}
                 </div>
                 {(selectedRequest.transaction_id||selectedRequest.rejection_reason) && (
@@ -550,7 +576,7 @@ function WithdrawalRequests() {
                 {selectedRequest.method==='bank' && <div className={styles.summaryDivider}>
                   <p style={{fontSize:'0.75rem',color:'#6b7280',marginBottom:'0.25rem'}}>Bank Details</p>
                   <p className={styles.summaryValue}>{selectedRequest.account_holder_name}</p>
-                  <p style={{fontSize:'0.875rem',color:'#4b5563'}}>{selectedRequest.bank_name} • {selectedRequest.account_number}</p>
+                  <p style={{fontSize:'0.875rem',color:'#4b5563'}}>{selectedRequest.bank_name} • {selectedRequest.raw_account_number || selectedRequest.account_number}</p>
                   <p style={{fontSize:'0.75rem',color:'#6b7280'}}>IFSC: {selectedRequest.ifsc_code}</p>
                 </div>}
               </div>
