@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { getUserDetailsAPI, getUserKycAPI, updateKycStatusAPI } from "../services/api";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -15,6 +15,17 @@ function PlayerDetails() {
   const [showKycModal, setShowKycModal] = useState(false);
   const [kycData, setKycData] = useState(null);
   const [kycLoading, setKycLoading] = useState(false);
+  
+  // Reject reason modal states
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [rejectReason, setRejectReason] = useState("");
+  const [rejectUserId, setRejectUserId] = useState(null);
+  const [rejectKycId, setRejectKycId] = useState(null);
+  const [rejectLoading, setRejectLoading] = useState(false);
+  
+  // Use ref to track if modal is open to prevent reopening
+  const isRejectModalOpen = useRef(false);
+  const textareaRef = useRef(null);
 
   useEffect(() => {
     fetchPlayerDetails();
@@ -46,7 +57,6 @@ function PlayerDetails() {
       const response = await getUserKycAPI(userId);
       console.log("KYC API Response:", response);
       if (response.data && response.data.length > 0) {
-        // API returns array, so take the first item
         setKycData(response.data[0]);
         setShowKycModal(true);
       } else {
@@ -61,15 +71,82 @@ function PlayerDetails() {
     }
   };
 
-  const handleKycStatusUpdate = async (userId, status) => {
+  // Handle KYC status change from dropdown
+  const handleKycStatusChange = (userId, status, kycId, currentStatus) => {
+    // Don't do anything if status is same as current
+    if (status === currentStatus) {
+      return;
+    }
+    
+    // Prevent reopening if modal is already open
+    if (isRejectModalOpen.current) {
+      return;
+    }
+    
+    if (status === "rejected") {
+      // Mark modal as open
+      isRejectModalOpen.current = true;
+      // Open reject reason modal
+      setRejectUserId(userId);
+      setRejectKycId(kycId);
+      setRejectReason("");
+      setShowRejectModal(true);
+    } else {
+      // Directly update for verified/pending
+      handleKycStatusUpdate(userId, status, kycId);
+    }
+  };
+
+  // Update KYC status
+  const handleKycStatusUpdate = async (userId, status, kycId, reason = "") => {
     try {
-      await updateKycStatusAPI(userId, status);
+      const response = await updateKycStatusAPI(kycId, status, reason);
+      console.log("KYC update response:", response);
       toast.success(`KYC ${status} successfully`);
+      
+      // Reset modal states
+      setShowRejectModal(false);
+      setRejectReason("");
+      setRejectUserId(null);
+      setRejectKycId(null);
+      isRejectModalOpen.current = false;
+      
+      // Refresh data
       fetchPlayerDetails();
     } catch (err) {
       console.error("Error updating KYC:", err);
-      toast.error("Failed to update KYC status");
+      const errorMsg = err.response?.data?.message || err.message || "Failed to update KYC status";
+      toast.error(errorMsg);
+      throw err;
     }
+  };
+
+  // Handle reject submission
+  const handleRejectSubmit = async () => {
+    if (!rejectReason.trim()) {
+      toast.error("Please provide a rejection reason");
+      return;
+    }
+    
+    setRejectLoading(true);
+    try {
+      await handleKycStatusUpdate(rejectUserId, "rejected", rejectKycId, rejectReason.trim());
+    } catch (err) {
+      console.log("Reject failed, modal stays open");
+    } finally {
+      setRejectLoading(false);
+    }
+  };
+
+  // Close reject modal and revert dropdown
+  const handleCloseRejectModal = () => {
+    setShowRejectModal(false);
+    setRejectReason("");
+    setRejectUserId(null);
+    setRejectKycId(null);
+    isRejectModalOpen.current = false;
+    // Revert the dropdown by refetching data
+    fetchPlayerDetails();
   };
 
   const handleViewGameHistory = (userId, userName) => {
@@ -79,7 +156,6 @@ function PlayerDetails() {
   const handleViewTransaction = (userId, userName) => {
     navigate(`/user-transaction-history?userId=${userId}&userName=${encodeURIComponent(userName)}`);
   };
-
 
   const filteredData = data.filter((item) => {
     const fullName = `${item.first_name} ${item.last_name}`.toLowerCase();
@@ -92,10 +168,83 @@ function PlayerDetails() {
     return matchesSearch && matchesVerify;
   });
 
+  // Focus textarea when reject modal opens
+  useEffect(() => {
+    if (showRejectModal && textareaRef.current) {
+      setTimeout(() => {
+        textareaRef.current?.focus();
+      }, 100);
+    }
+  }, [showRejectModal]);
+
+  // Reject Reason Modal Component
+  const RejectReasonModal = () => (
+    <div className="modal-overlay" onClick={handleCloseRejectModal}>
+      <div className="modal-content reject-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header reject-header">
+          <h3>Reject KYC - Reason Required</h3>
+          <button className="modal-close" onClick={handleCloseRejectModal}>×</button>
+        </div>
+        
+        <div className="modal-body">
+          <div className="form-group">
+            <label className="form-label">
+              Please provide a reason for rejection <span className="required">*</span>
+            </label>
+            <textarea
+              ref={textareaRef}
+              className="reject-textarea"
+              placeholder="Enter the reason for rejecting this KYC..."
+              value={rejectReason}
+              onChange={(e) => {
+                e.stopPropagation();
+                setRejectReason(e.target.value);
+              }}
+              onClick={(e) => e.stopPropagation()}
+              onKeyDown={(e) => e.stopPropagation()}
+              onKeyUp={(e) => e.stopPropagation()}
+              onKeyPress={(e) => e.stopPropagation()}
+              rows={4}
+              maxLength={500}
+            />
+            <div className="char-count">
+              <small>{rejectReason.length}/500 characters</small>
+            </div>
+          </div>
+          
+          <div className="reject-warning">
+            <span>⚠️</span>
+            <p>This reason will be visible to the user. Please be clear and professional.</p>
+          </div>
+        </div>
+        
+        <div className="modal-footer">
+          <button 
+            className="cancel-btn" 
+            onClick={handleCloseRejectModal}
+            type="button"
+          >
+            Cancel
+          </button>
+          <button 
+            className="reject-confirm-btn" 
+            onClick={(e) => {
+              e.stopPropagation();
+              handleRejectSubmit();
+            }}
+            disabled={rejectLoading || !rejectReason.trim()}
+            type="button"
+          >
+            {rejectLoading ? "Rejecting..." : "Confirm Rejection"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  // KYC Modal Component
   const KycModal = ({ kyc, onClose }) => {
     if (!kyc) return null;
-
-    console.log("KYC Modal Data:", kyc);
 
     return (
       <div className="modal-overlay" onClick={onClose}>
@@ -193,6 +342,7 @@ function PlayerDetails() {
     );
   };
 
+  // View Player Modal Component
   const ViewPlayerModal = ({ player, onClose }) => {
     if (!player) return null;
     const fullName = `${player.first_name} ${player.last_name}`;
@@ -201,8 +351,6 @@ function PlayerDetails() {
     return (
       <div className="modal-overlay" onClick={onClose}>
         <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-
-          {/* Header */}
           <div className="modal-hero">
             <button className="modal-close" onClick={onClose}>×</button>
             <div className="modal-avatar">{initials}</div>
@@ -216,8 +364,6 @@ function PlayerDetails() {
           </div>
 
           <div className="modal-body">
-
-            {/* Financial Grid */}
             <p className="section-label">Financial Summary</p>
             <div className="fin-grid">
               <div className="fin-card green">
@@ -252,7 +398,6 @@ function PlayerDetails() {
               </div>
             </div>
 
-            {/* Info Rows */}
             <p className="section-label">Account Info</p>
             <div className="info-rows">
               <div className="info-row">
@@ -295,8 +440,7 @@ function PlayerDetails() {
 
   return (
     <div className="page-container">
-
-     <h2 className="page-heading">Users Details</h2>
+      <h2 className="page-heading">Users Details</h2>
 
       <div className="page-header">
         <div className="stats-cards">
@@ -389,12 +533,16 @@ function PlayerDetails() {
                         {item.is_verified ? "Verified" : "Unverified"}
                       </span>
                     </td>
-
                     <td>
                       <select 
                         className={`kyc-status-dropdown kyc-${item.kyc_status || 'pending'}`}
                         value={item.kyc_status || "pending"}
-                        onChange={(e) => handleKycStatusUpdate(item.user_id, e.target.value)}
+                        onChange={(e) => handleKycStatusChange(
+                          item.user_id, 
+                          e.target.value, 
+                          item.kyc_id, 
+                          item.kyc_status
+                        )}
                       >
                         <option value="pending">Pending</option>
                         <option value="verified">Verified</option>
@@ -426,6 +574,7 @@ function PlayerDetails() {
         )}
       </div>
 
+      {/* Modals */}
       {selectedPlayer && (
         <ViewPlayerModal 
           player={selectedPlayer} 
@@ -439,6 +588,8 @@ function PlayerDetails() {
           onClose={() => setShowKycModal(false)}
         />
       )}
+
+      {showRejectModal && <RejectReasonModal />}
     </div>
   );
 }

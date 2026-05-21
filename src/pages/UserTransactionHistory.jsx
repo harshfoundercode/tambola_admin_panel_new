@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { getUserGameHistoryAPI } from "../services/api";
+import { getUserTransactionHistoryAPI} from "../services/api";
 import { toast } from "react-toastify";
 import "../styles/UserTransactionHistory.css";
 
@@ -27,7 +27,7 @@ function UserTransactionHistory() {
     try {
       setLoading(true);
       setError(null);
-      const response = await getUserGameHistoryAPI(userId);
+      const response = await getUserTransactionHistoryAPI(userId);
       if (response.data) {
         setData(response.data);
       } else {
@@ -141,7 +141,7 @@ function UserTransactionHistory() {
               </div>
 
               <div className="tickets-section">
-                <h4>Tickets ({transaction.tickets.length})</h4>
+                <h4>Tickets ({transaction.data.length})</h4>
                 <div className="tickets-grid">
                   {transaction.tickets.map((ticket) => (
                     <div key={ticket.ticket_id} className="ticket-card">

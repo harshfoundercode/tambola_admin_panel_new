@@ -32,7 +32,7 @@ const WinnerBannerManager = () => {
         bannerData = response.data;
       } else if (response.data) {
         bannerData = response.data;
-      } else if (response.image_url || response.image) {
+      } else if (response.image_url) {
         bannerData = response;
       }
       
