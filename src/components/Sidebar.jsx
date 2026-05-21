@@ -52,6 +52,7 @@ function Sidebar() {
     { path: "/add-offer", name: "Add Offer", icon: "🏷️" },
     { path: "/add-banner", name: "Add Banner", icon: "🖼️" },
     { path: "/policies", name: "Policies", icon: "📄" },
+    { path: "/qr-code", name: "Qr Code", icon: "📇" },
 
     { path: "/videos", name: "Videos", icon: "🎥" },
     { path: "/how-it-works", name: "How it works", icon: "ℹ️" },

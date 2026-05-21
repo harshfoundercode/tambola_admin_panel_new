@@ -31,6 +31,7 @@ import "./App.css";
 import HowItWorksManager from "./pages/HowItsWorks";
 import WinnerBannerManager from "./pages/WinnerBanner";
 import WithdrawalRequests from "./pages/withdrawRequest";
+import PaymentQRManager from "./pages/qr_code";
 
 function App() {
   return (
@@ -171,6 +172,17 @@ function App() {
             <ProtectedRoute>
               <Layout>
                 <PlayerDetails />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/qr-code"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <PaymentQRManager />
               </Layout>
             </ProtectedRoute>
           }
