@@ -531,6 +531,8 @@ import axios from "axios";
 // Testing URL
 const API_BASE_URL = "https://api.luckyfunda.com/api";
 
+const TESTING_API_BASE_URL = "https://api.luckyfunda.com/";
+
 const UPLOAD_BASE_URL = "https://api.luckyfunda.com";
 
 const api = axios.create({
@@ -1060,6 +1062,7 @@ export const changeWithdrawReqStatusAPI = async (data) => {
   }
 };
 
+
 /*============== Footer/Contact APIs ============*/
 export const getFooterDataAPI = async () => {
   console.log("📋 GET FOOTER DATA API CALLED");
@@ -1073,4 +1076,16 @@ export const getFooterDataAPI = async () => {
   }
 };
 
+/*============== Bulk Transfer Number APIs ============*/
+export const bulkTransferNumberAnnounceAPI = async (data) => {
+  try {
+    console.log("📤 Status Update Data:", JSON.stringify(data));
+    const response = await api.post("/game/set-bulk-announcement", data);
+    console.log("✅ bulkTransferNumberAnnounceAPI  Response:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error in bulk transfer number status:", error.response?.data || error.message);
+    throw error;
+  }
+};
 export default api;

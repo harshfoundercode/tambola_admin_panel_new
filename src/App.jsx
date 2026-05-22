@@ -32,6 +32,8 @@ import HowItWorksManager from "./pages/HowItsWorks";
 import WinnerBannerManager from "./pages/WinnerBanner";
 import WithdrawalRequests from "./pages/withdrawRequest";
 import PaymentQRManager from "./pages/qr_code";
+import ReferralSystem from "./pages/ReferalCode";
+import ReferralSettings from "./pages/ReferalCode";
 
 function App() {
   return (
@@ -310,6 +312,17 @@ function App() {
             <ProtectedRoute>
               <Layout>
                 <ChangePassword />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+
+         <Route
+          path="/referal"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <ReferralSettings />
               </Layout>
             </ProtectedRoute>
           }

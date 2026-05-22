@@ -46,6 +46,8 @@ function Sidebar() {
     { path: "/live-game", name: "Live Game", icon: "🔴" },
     { path: "/tickets", name: "Tickets", icon: "🎫" },
     { path: "/withdraw-request", name: "Withdrawal Requests", icon: "🪙" },
+    { path: "/referal", name: "Referral", icon: "🔗" },
+
 
     { path: "/winners", name: "Winners", icon: "🥇" },
     { path: "/prizes", name: "Manage Prizes", icon: "🎁" },
