@@ -883,6 +883,12 @@ export const forceWinnerByTicketAPI = async (roundId, data) => {
   return response.data;
 };
 
+export const forceWinnerByTicketNewAPI = async (data) => {
+  console.log("🎫 FORCE WINNER BY TICKET API CALLED");
+  const response = await api.post(`/game/set-winning-ticket`, data);
+  return response.data;
+};
+
 export const adminAnnounceAPI = async (roundId, data) => {
   console.log("📢 ADMIN ANNOUNCE API CALLED");
   const response = await api.post(`/admin/announce/${roundId}`, data);
@@ -896,12 +902,6 @@ export const getUserKycAPI = async (userId) => {
   return response.data;
 };
 
-// export const updateKycStatusAPI = async (userId, status) => {
-//   console.log("✏️ UPDATE KYC STATUS API CALLED");
-//   const response = await api.put(`/user/kyc/status/${userId}`, { status });
-//   console.log(`KYC status update response for user ${userId}:`, response.data);
-//   return response.data;
-// };
 
 export const updateKycStatusAPI = async (kycId, status, rejectReason = "") => {
   try {
@@ -1085,6 +1085,19 @@ export const bulkTransferNumberAnnounceAPI = async (data) => {
     return response.data;
   } catch (error) {
     console.error("❌ Error in bulk transfer number status:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+/*============== Referral Api submit APIs ============*/
+export const referralSubmitAPI = async (data) => {
+  try {
+    console.log("📤 Status Update Data:", JSON.stringify(data));
+    const response = await api.post("/auth/admin/referral-settings", data);
+    console.log("✅ referralSubmit API  Response:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error in referal submit status:", error.response?.data || error.message);
     throw error;
   }
 };

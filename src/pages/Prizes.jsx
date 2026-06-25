@@ -423,12 +423,12 @@ const handleDelete = async (prize_id, prize_name) => {
         </div>
         <div className="header-stats">
           <div className="stat-card">
-            <span>Total Prizes</span>
-            <strong>{prizes.length}</strong>
+            <span class="text-blue-500">Total Prizes</span>
+            <strong class="text-blue-500">{prizes.length}</strong>
           </div>
           <div className="stat-card">
-            <span>Active Games</span>
-            <strong>{games.length}</strong>
+            <span class="text-blue-500">Active Games</span>
+            <strong class="text-blue-500">{games.length}</strong>
           </div>
           <button className="add-prize-btn" onClick={openAddModal}>
             ➕ Add New Prize

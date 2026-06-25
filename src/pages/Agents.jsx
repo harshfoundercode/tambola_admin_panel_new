@@ -142,6 +142,10 @@ function Agents() {
                 <span className="info-val">{agent.telegram_username || "—"}</span>
               </div>
               <div className="info-row">
+                <span className="info-key">Password</span>
+                <span className="info-val">{agent.password || "—"}</span>
+              </div>
+              <div className="info-row">
                 <span className="info-key">SMS Number</span>
                 <span className="info-val">{agent.sms_number || "—"}</span>
               </div>
