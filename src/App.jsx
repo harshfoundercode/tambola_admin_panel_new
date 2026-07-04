@@ -34,6 +34,7 @@ import WithdrawalRequests from "./pages/withdrawRequest";
 import PaymentQRManager from "./pages/qr_code";
 import ReferralSystem from "./pages/ReferalCode";
 import ReferralSettings from "./pages/ReferalCode";
+import AdminCommissionWallet from "./pages/WalletSection";
 
 function App() {
   return (
@@ -42,8 +43,6 @@ function App() {
 
         {/* 🔐 Login Page */}
         <Route path="/" element={<Login />} />
-
-
 
 
         {/* 🔒 Protected Layout */}
@@ -323,6 +322,16 @@ function App() {
             <ProtectedRoute>
               <Layout>
                 <ReferralSettings />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+         <Route
+          path="/wallet"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <AdminCommissionWallet />
               </Layout>
             </ProtectedRoute>
           }

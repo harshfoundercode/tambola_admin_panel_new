@@ -47,6 +47,7 @@ function Sidebar() {
     { path: "/tickets", name: "Tickets", icon: "🎫" },
     { path: "/withdraw-request", name: "Withdrawal Requests", icon: "🪙" },
     { path: "/referal", name: "Referral", icon: "🔗" },
+    { path:"/wallet", name:"Wallet",icon:"💰"},
 
 
     { path: "/winners", name: "Winners", icon: "🥇" },

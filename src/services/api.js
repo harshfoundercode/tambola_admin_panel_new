@@ -1101,4 +1101,33 @@ export const referralSubmitAPI = async (data) => {
     throw error;
   }
 };
+
+/*============== wallet Dashboard APIs ============*/
+export const getWalletDashboardDataAPI = async () => {
+  console.log("📊 GET WALLET DASHBOARD DATA API CALLED");
+  const response = await api.get("/admin/wallet/dashboard");
+  return response;
+};
+
+/*============== wallet Transaction APIs ============*/
+export const getWalletTransactionAPI = async () => {
+  console.log("📊 GET WALLET TRANSACTION DATA API CALLED");
+  const response = await api.get("/admin/wallet/transactions");
+  return response;
+};
+
+/*============== wallet AGENTS APIs ============*/
+export const getWalletAgentsAPI = async () => {
+  console.log("📊 GET WALLET AGENTS DATA API CALLED");
+  const response = await api.get("/admin/wallet/agents");
+  return response;
+};
+
+/*============== wallet AGENT DETAILS APIs ============*/
+export const getWalletAgentsDetailsAPI = async (agentId) => {
+  console.log("📊 GET WALLET AGENTS DETAILS DATA API CALLED", { agentId });
+  const response = await api.get(`/admin/wallet/agents/${agentId}`);
+  return response;
+};
+
 export default api;
