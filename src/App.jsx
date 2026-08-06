@@ -89,6 +89,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+      
 
         <Route
           path="/tickets"
