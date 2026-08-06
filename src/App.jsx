@@ -30,7 +30,6 @@ import Layout from "./components/Layout";
 import "./App.css";
 import HowItWorksManager from "./pages/HowItsWorks";
 import WinnerBannerManager from "./pages/WinnerBanner";
-import WithdrawalRequests from "./pages/WithdrawRequest";
 import WithdrawalRequests from "../src/pages/WithdrawRequest";
 import PaymentQRManager from "./pages/qr_code";
 import ReferralSystem from "./pages/ReferalCode";
