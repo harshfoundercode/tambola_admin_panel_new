@@ -45,7 +45,7 @@ export default function GameManager({ onGameSelect }) {
 
   const winningHouseOptions = [
     "First Full House",
-    "Secend Full House",
+    "Second Full House",
     "Third Full House",
     "Top Line",
     "Middle Line",
@@ -151,7 +151,7 @@ export default function GameManager({ onGameSelect }) {
           case "First Full House":
             prizeName = "FIRST_FULL_HOUSE";
             break;
-          case "Secend Full House":
+          case "Second Full House":
             prizeName = "SECOND_FULL_HOUSE";
             break;
           case "Third Full House":
@@ -292,11 +292,11 @@ export default function GameManager({ onGameSelect }) {
               case "FIRST FULL HOUSE":
                 displayName = "First Full House";
                 break;
-              case "SECOND_FULL_HOUSE":
-              case "SECEND_FULL_HOUSE":
-              case "SECOND FULL HOUSE":
-              case "SECEND FULL HOUSE":
-                displayName = "Secend Full House";
+              case "Second":
+              case "Second":
+              case "Second FULL HOUSE":
+              case "Second FULL HOUSE":
+                displayName = "Second Full House";
                 break;
               case "THIRD_FULL_HOUSE":
               case "THIRD FULL HOUSE":
