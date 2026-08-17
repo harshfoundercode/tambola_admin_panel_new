@@ -35,6 +35,7 @@ import PaymentQRManager from "./pages/qr_code";
 import ReferralSystem from "./pages/ReferalCode";
 import ReferralSettings from "./pages/ReferalCode";
 import AdminCommissionWallet from "./pages/WalletSection";
+import GameUserHistory from "./pages/GameHistory";
 
 function App() {
   return (
@@ -337,6 +338,17 @@ function App() {
             </ProtectedRoute>
           }
         />
+         <Route
+          path="/game-history"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <GameUserHistory />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        
 
       </Routes>
     </BrowserRouter>

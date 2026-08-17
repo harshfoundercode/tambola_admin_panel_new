@@ -42,6 +42,8 @@ function Sidebar() {
     { path: "/agents", name: "Agents", icon: "🧑‍💼" },
     { path: "/create-game", name: "Create Game", icon: "➕" },
     { path: "/games", name: "Manage Games", icon: "🎮" },
+     { path: "/game-history", name: "Game History", icon: "📋" },
+    
    
     { path: "/live-game", name: "Live Game", icon: "🔴" },
 
