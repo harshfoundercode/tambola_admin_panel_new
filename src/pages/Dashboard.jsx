@@ -1,5 +1,6 @@
 import "../styles/dashboard.css";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { getDashboardDataAPI } from "../services/api";
 import {
   LineChart,
@@ -11,11 +12,12 @@ import {
   CartesianGrid,
 } from "recharts";
 
-import { FaGamepad, FaUsers, FaRupeeSign, FaPlay, FaTrophy, FaTicketAlt, FaCalendarAlt, FaArrowUp, FaArrowDown } from "react-icons/fa";
+import { FaGamepad, FaUsers, FaRupeeSign, FaPlay, FaTrophy, FaTicketAlt, FaCalendarAlt, FaArrowUp, FaArrowDown, FaMoneyBillWave, FaClock, FaCheckCircle } from "react-icons/fa";
 
 export default function Dashboard() {
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchDashboardData();
@@ -32,6 +34,18 @@ export default function Dashboard() {
       console.error("Error fetching dashboard data:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Navigate to Player Details page
+  const handleNavigateToPlayerDetails = () => {
+    navigate('/player-details');
+  };
+
+  // Navigate to user details with specific user
+  const handleUserClick = (userId) => {
+    if (userId) {
+      navigate(`/player-details?userId=${userId}`);
     }
   };
 
@@ -58,7 +72,7 @@ export default function Dashboard() {
       color: "purple",
       change: `${cards.live_games} live now`,
       increase: true,
-      gradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+      onClick: null,
     },
     {
       title: "Total Players",
@@ -67,7 +81,7 @@ export default function Dashboard() {
       color: "green",
       change: `${cards.total_agents} agents`,
       increase: true,
-      gradient: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
+      onClick: handleNavigateToPlayerDetails,
     },
     {
       title: "Total Revenue",
@@ -76,7 +90,7 @@ export default function Dashboard() {
       color: "gold",
       change: `₹${cards.total_winning_distributed} distributed`,
       increase: true,
-      gradient: "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
+      onClick: null,
     },
     {
       title: "Pending Claims",
@@ -85,7 +99,38 @@ export default function Dashboard() {
       color: "orange",
       change: `${cards.total_claims} total claims`,
       increase: true,
-      gradient: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+      onClick: null,
+    },
+  ];
+
+  // Payment stats with navigation to Player Details page
+  const paymentStats = [
+    {
+      title: "Manual Payment Requests",
+      value: cards.manual_payment_requests || 0,
+      icon: <FaMoneyBillWave />,
+      color: "blue",
+      change: "Total requests",
+      increase: true,
+      onClick: handleNavigateToPlayerDetails,
+    },
+    {
+      title: "Pending Payments",
+      value: cards.pending_manual_payments || 0,
+      icon: <FaClock />,
+      color: "orange",
+      change: "Awaiting approval",
+      increase: true,
+      onClick: handleNavigateToPlayerDetails,
+    },
+    {
+      title: "Successful Payments",
+      value: cards.successful_manual_payments || 0,
+      icon: <FaCheckCircle />,
+      color: "green",
+      change: "Completed",
+      increase: true,
+      onClick: handleNavigateToPlayerDetails,
     },
   ];
 
@@ -121,7 +166,11 @@ export default function Dashboard() {
 
       {/* Stats Grid with Unique Colors */}
       <div className="stats-grid">
-        <div className="stat-card stat-card-1">
+        <div 
+          className="stat-card stat-card-1"
+          onClick={stats[0].onClick}
+          style={{ cursor: stats[0].onClick ? 'pointer' : 'default' }}
+        >
           <div className="stat-circle"></div>
           <div className="stat-icon-wrapper icon-purple">
             {stats[0].icon}
@@ -136,7 +185,11 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="stat-card stat-card-2">
+        <div 
+          className="stat-card stat-card-2"
+          onClick={stats[1].onClick}
+          style={{ cursor: stats[1].onClick ? 'pointer' : 'default' }}
+        >
           <div className="stat-circle"></div>
           <div className="stat-icon-wrapper icon-orange">
             {stats[1].icon}
@@ -151,7 +204,11 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="stat-card stat-card-3">
+        <div 
+          className="stat-card stat-card-3"
+          onClick={stats[2].onClick}
+          style={{ cursor: stats[2].onClick ? 'pointer' : 'default' }}
+        >
           <div className="stat-circle"></div>
           <div className="stat-icon-wrapper icon-green">
             {stats[2].icon}
@@ -166,7 +223,11 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="stat-card stat-card-4">
+        <div 
+          className="stat-card stat-card-4"
+          onClick={stats[3].onClick}
+          style={{ cursor: stats[3].onClick ? 'pointer' : 'default' }}
+        >
           <div className="stat-circle"></div>
           <div className="stat-icon-wrapper icon-gold">
             {stats[3].icon}
@@ -182,60 +243,103 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Chart and Winners Row */}
-      <div className="two-columns">
-        {/* Chart Section */}
-        <div className="chart-section">
-          <div className="section-header">
-            <h3>Revenue Overview</h3>
-            <span className="section-badge">This Week</span>
-          </div>
-          <ResponsiveContainer width="100%" height={280}>
-            <LineChart data={revenueData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
-              <XAxis dataKey="day" stroke="#64748B" fontSize={12} />
-              <YAxis stroke="#64748B" fontSize={12} />
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: '#FFFFFF', 
-                  border: '1px solid #E2E8F0',
-                  borderRadius: '12px',
-                  padding: '8px 12px'
-                }}
-                formatter={(value) => [`₹${value.toLocaleString()}`, 'Revenue']}
-              />
-              <Line
-                type="monotone"
-                dataKey="revenue"
-                stroke="#FBBF24"
-                strokeWidth={3}
-                dot={{ fill: '#FBBF24', strokeWidth: 2, r: 4 }}
-                activeDot={{ r: 6, fill: '#1E3A8A' }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-
-        {/* Top Winners */}
-        <div className="winners-section">
-          <div className="section-header">
-            <h3>🏆 Top Winners</h3>
-            <span className="section-badge yellow">This Week</span>
-          </div>
-          <div className="winners-list">
-            {tables.top_winners.length > 0 ? tables.top_winners.map((winner, i) => (
-              <div key={i} className="winner-item">
-                <div className="winner-rank">{i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '⭐'}</div>
-                <div className="winner-info">
-                  <span className="winner-name">{winner.name}</span>
-                  <span className="winner-game">{winner.game}</span>
-                </div>
-                <div className="winner-prize">₹{winner.prize}</div>
+      {/* Manual Payment Stats Row - Clickable */}
+      <div className="payment-stats-grid">
+        <h3 className="payment-stats-title">💰 Manual Payment Overview</h3>
+        <div className="payment-stats-container">
+          {paymentStats.map((stat, index) => (
+            <div 
+              key={index} 
+              className={`payment-stat-card payment-stat-${index + 1} clickable`}
+              onClick={stat.onClick}
+              style={{ cursor: 'pointer' }}
+            >
+              <div className="payment-stat-circle"></div>
+              <div className={`payment-stat-icon-wrapper icon-${stat.color}`}>
+                {stat.icon}
               </div>
-            )) : (
-              <div className="no-data">No winners yet</div>
-            )}
-          </div>
+              <div className="payment-stat-content">
+                <h4 className="payment-stat-title">{stat.title}</h4>
+                <p className="payment-stat-value">{stat.value}</p>
+                <span className="payment-stat-change positive">
+                  <FaArrowUp className="change-icon" />
+                  {stat.change}
+                </span>
+              </div>
+              <div className="payment-hover-effect">
+                View Details →
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Chart Section - Full Width */}
+      <div className="chart-section">
+        <div className="section-header">
+          <h3>Revenue Overview</h3>
+          <span className="section-badge">This Week</span>
+        </div>
+        <ResponsiveContainer width="100%" height={280}>
+          <LineChart data={revenueData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
+            <XAxis dataKey="day" stroke="#64748B" fontSize={12} />
+            <YAxis stroke="#64748B" fontSize={12} />
+            <Tooltip 
+              contentStyle={{ 
+                backgroundColor: '#FFFFFF', 
+                border: '1px solid #E2E8F0',
+                borderRadius: '12px',
+                padding: '8px 12px'
+              }}
+              formatter={(value) => [`₹${value.toLocaleString()}`, 'Revenue']}
+            />
+            <Line
+              type="monotone"
+              dataKey="revenue"
+              stroke="#FBBF24"
+              strokeWidth={3}
+              dot={{ fill: '#FBBF24', strokeWidth: 2, r: 4 }}
+              activeDot={{ r: 6, fill: '#1E3A8A' }}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* Top Winners - Full Width */}
+      <div className="winners-section">
+        <div className="section-header">
+          <h3>🏆 Top Winners</h3>
+          <span className="section-badge yellow">This Week</span>
+        </div>
+        <div className="winners-list">
+          {tables.top_winners && tables.top_winners.length > 0 ? (
+            tables.top_winners.map((winner, i) => (
+              <div 
+                key={i} 
+                className="winner-item clickable"
+                onClick={() => handleUserClick(winner.user_id)}
+                style={{ cursor: winner.user_id ? 'pointer' : 'default' }}
+              >
+                <div className="winner-rank">
+                  {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '⭐'}
+                </div>
+                <div className="winner-info">
+                  <span className="winner-name">
+                    {winner.user_name || `User ${winner.user_id || 'Unknown'}`}
+                  </span>
+                  <span className="winner-game">
+                    {winner.total_wins || 0} wins
+                  </span>
+                </div>
+                <div className="winner-prize">
+                  ₹{parseInt(winner.total_winning || 0).toLocaleString()}
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="no-data">No winners yet</div>
+          )}
         </div>
       </div>
 
@@ -257,19 +361,25 @@ export default function Dashboard() {
               </tr>
             </thead>
             <tbody>
-              {tables.recent_games.map((game, i) => (
-                <tr key={i}>
-                  <td className="game-name">{game.title}</td>
-                  <td>
-                    <span className={`status-badge ${getStatusClass(game.status)}`}>
-                      {game.status}
-                    </span>
-                  </td>
-                  <td>{game.total_players}</td>
-                  <td className="prize">₹{game.total_prize_pool}</td>
-                  <td>{game.game_time}</td>
+              {tables.recent_games && tables.recent_games.length > 0 ? (
+                tables.recent_games.map((game, i) => (
+                  <tr key={i}>
+                    <td className="game-name">{game.title}</td>
+                    <td>
+                      <span className={`status-badge ${getStatusClass(game.status)}`}>
+                        {game.status}
+                      </span>
+                    </td>
+                    <td>{game.total_players}</td>
+                    <td className="prize">₹{game.total_prize_pool}</td>
+                    <td>{game.game_time}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="5" className="no-data">No recent games</td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>

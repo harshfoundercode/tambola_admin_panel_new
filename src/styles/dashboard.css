@@ -312,21 +312,278 @@
   background: rgba(255, 255, 255, 0.18);
 }
 
-/* ========== TWO COLUMNS LAYOUT ========== */
-.two-columns {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
+/* ============================================
+   PAYMENT STATS GRID - COLORFUL CARDS
+   Beautiful Gradient Backgrounds for Each Card
+   ============================================ */
+
+/* Payment Stats Grid Container */
+.payment-stats-grid {
   margin-bottom: 32px;
+  padding: 20px;
+  background: #FFFFFF;
+  border-radius: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  border: 1px solid #E2E8F0;
 }
 
-/* Chart Section */
+.payment-stats-title {
+  color: #1E3A8A;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  letter-spacing: 0.3px;
+}
+
+.payment-stats-title::before {
+  content: '';
+  width: 4px;
+  height: 20px;
+  background: linear-gradient(135deg, #FBBF24, #F59E0B);
+  border-radius: 4px;
+}
+
+.payment-stats-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+/* Card 1 - Blue Gradient */
+.payment-stat-card.payment-stat-1 {
+  background: linear-gradient(135deg, #2563EB 0%, #3B82F6 50%, #60A5FA 100%) !important;
+  border-radius: 20px;
+  padding: 22px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+  box-shadow: 0 8px 25px rgba(37, 99, 235, 0.35);
+  cursor: pointer;
+}
+
+.payment-stat-card.payment-stat-1:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 15px 40px rgba(37, 99, 235, 0.45);
+}
+
+.payment-stat-card.payment-stat-1 .payment-stat-title {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.payment-stat-card.payment-stat-1 .payment-stat-value {
+  color: #FFFFFF !important;
+}
+
+.payment-stat-card.payment-stat-1 .payment-stat-change {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.payment-stat-card.payment-stat-1 .payment-stat-icon-wrapper {
+  background: rgba(255, 255, 255, 0.25) !important;
+  color: #FFFFFF !important;
+}
+
+.payment-stat-card.payment-stat-1 .payment-hover-effect {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Card 2 - Orange Gradient */
+.payment-stat-card.payment-stat-2 {
+  background: linear-gradient(135deg, #EA580C 0%, #F59E0B 50%, #FBBF24 100%) !important;
+  border-radius: 20px;
+  padding: 22px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+  box-shadow: 0 8px 25px rgba(234, 88, 12, 0.35);
+  cursor: pointer;
+}
+
+.payment-stat-card.payment-stat-2:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 15px 40px rgba(234, 88, 12, 0.45);
+}
+
+.payment-stat-card.payment-stat-2 .payment-stat-title {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.payment-stat-card.payment-stat-2 .payment-stat-value {
+  color: #FFFFFF !important;
+}
+
+.payment-stat-card.payment-stat-2 .payment-stat-change {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.payment-stat-card.payment-stat-2 .payment-stat-icon-wrapper {
+  background: rgba(255, 255, 255, 0.25) !important;
+  color: #FFFFFF !important;
+}
+
+.payment-stat-card.payment-stat-2 .payment-hover-effect {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Card 3 - Green Gradient */
+.payment-stat-card.payment-stat-3 {
+  background: linear-gradient(135deg, #059669 0%, #10B981 50%, #34D399 100%) !important;
+  border-radius: 20px;
+  padding: 22px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+  box-shadow: 0 8px 25px rgba(5, 150, 105, 0.35);
+  cursor: pointer;
+}
+
+.payment-stat-card.payment-stat-3:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 15px 40px rgba(5, 150, 105, 0.45);
+}
+
+.payment-stat-card.payment-stat-3 .payment-stat-title {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.payment-stat-card.payment-stat-3 .payment-stat-value {
+  color: #FFFFFF !important;
+}
+
+.payment-stat-card.payment-stat-3 .payment-stat-change {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.payment-stat-card.payment-stat-3 .payment-stat-icon-wrapper {
+  background: rgba(255, 255, 255, 0.25) !important;
+  color: #FFFFFF !important;
+}
+
+.payment-stat-card.payment-stat-3 .payment-hover-effect {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Decorative circle animation */
+.payment-stat-card .payment-stat-circle {
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  transition: all 0.5s ease;
+  pointer-events: none;
+}
+
+.payment-stat-card:hover .payment-stat-circle {
+  transform: scale(1.5);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* Payment Icon Wrappers */
+.payment-stat-icon-wrapper {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  color: #FFFFFF;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.25) !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.payment-stat-card:hover .payment-stat-icon-wrapper {
+  transform: scale(1.1) rotate(-5deg);
+  background: rgba(255, 255, 255, 0.35) !important;
+}
+
+/* Payment Content */
+.payment-stat-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.payment-stat-title {
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin: 0 0 4px 0;
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.payment-stat-value {
+  font-size: 26px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+  letter-spacing: -0.5px;
+  color: #FFFFFF !important;
+}
+
+.payment-stat-change {
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.payment-stat-change .change-icon {
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Hover effect - View Details */
+.payment-hover-effect {
+  position: absolute;
+  bottom: 10px;
+  right: 14px;
+  opacity: 0;
+  transform: translateX(10px);
+  transition: all 0.3s ease;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8) !important;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 4px 12px;
+  border-radius: 20px;
+  backdrop-filter: blur(4px);
+}
+
+.payment-stat-card:hover .payment-hover-effect {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* ========== CHART SECTION ========== */
 .chart-section {
   background: #FFFFFF;
   border-radius: 24px;
   padding: 24px;
   border: 1px solid #E2E8F0;
   transition: all 0.3s ease;
+  margin-bottom: 24px;
 }
 
 .chart-section:hover {
@@ -363,13 +620,16 @@
   color: #D97706;
 }
 
-/* Winners Section */
+/* ========== WINNERS SECTION - FULL WIDTH ========== */
+
 .winners-section {
   background: #FFFFFF;
   border-radius: 24px;
   padding: 24px;
   border: 1px solid #E2E8F0;
   transition: all 0.3s ease;
+  margin-bottom: 32px;
+  width: 100%;
 }
 
 .winners-section:hover {
@@ -381,59 +641,138 @@
 .winners-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 6px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.winners-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.winners-list::-webkit-scrollbar-track {
+  background: #F1F5F9;
+  border-radius: 10px;
+}
+
+.winners-list::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 10px;
 }
 
 .winner-item {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 12px;
+  gap: 12px;
+  padding: 8px 12px;
   background: #F8FAFC;
-  border-radius: 16px;
+  border-radius: 8px;
   transition: all 0.3s ease;
+  border: 1px solid transparent;
+  cursor: pointer;
+  min-width: 0;
 }
 
 .winner-item:hover {
   background: #EFF6FF;
-  transform: translateX(6px);
+  transform: translateX(4px);
+  border-color: #BFDBFE;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
 }
 
 .winner-rank {
-  width: 40px;
-  height: 40px;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
   background: linear-gradient(135deg, #FBBF24, #F59E0B);
   color: white;
-  border-radius: 12px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  font-size: 20px;
+  font-size: 14px;
+  line-height: 1;
+  box-shadow: 0 1px 4px rgba(251, 191, 36, 0.3);
+  flex-shrink: 0;
+}
+
+/* Different rank colors with emoji sizes */
+.winner-item:nth-child(1) .winner-rank {
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  box-shadow: 0 1px 6px rgba(255, 215, 0, 0.4);
+  font-size: 18px;
+}
+
+.winner-item:nth-child(2) .winner-rank {
+  background: linear-gradient(135deg, #C0C0C0, #A8A8A8);
+  box-shadow: 0 1px 6px rgba(192, 192, 192, 0.3);
+  font-size: 16px;
+}
+
+.winner-item:nth-child(3) .winner-rank {
+  background: linear-gradient(135deg, #CD7F32, #B87333);
+  box-shadow: 0 1px 6px rgba(205, 127, 50, 0.3);
+  font-size: 16px;
+}
+
+.winner-item:nth-child(n+4) .winner-rank {
+  background: linear-gradient(135deg, #8B5CF6, #6D28D9);
+  box-shadow: 0 1px 6px rgba(139, 92, 246, 0.3);
+  font-size: 12px;
 }
 
 .winner-info {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
+  min-width: 0;
 }
 
 .winner-name {
   font-size: 14px;
   font-weight: 600;
   color: #1E3A8A;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+  max-width: 100%;
 }
 
 .winner-game {
   font-size: 11px;
-  color: #64748B;
+  color: #94A3B8;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  line-height: 1.2;
+}
+
+.winner-game::before {
+  content: '🏅';
+  font-size: 11px;
 }
 
 .winner-prize {
   font-size: 15px;
   font-weight: 700;
-  color: #FBBF24;
+  color: #10B981;
+  white-space: nowrap;
+  background: rgba(16, 185, 129, 0.08);
+  padding: 4px 12px;
+  border-radius: 20px;
+  flex-shrink: 0;
+}
+
+/* No data state */
+.no-data {
+  padding: 20px;
+  text-align: center;
+  color: #94A3B8;
+  font-size: 14px;
 }
 
 /* ========== TABLE SECTION ========== */
@@ -555,9 +894,8 @@
     padding: 20px;
   }
   
-  .two-columns {
-    grid-template-columns: 1fr;
-    gap: 20px;
+  .payment-stats-container {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   }
 }
 
@@ -605,6 +943,91 @@
     padding: 10px 8px;
     font-size: 12px;
   }
+  
+  /* Payment stats responsive */
+  .payment-stats-grid {
+    padding: 16px;
+  }
+  
+  .payment-stats-title {
+    font-size: 16px;
+  }
+  
+  .payment-stats-container {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  
+  .payment-stat-card.payment-stat-1,
+  .payment-stat-card.payment-stat-2,
+  .payment-stat-card.payment-stat-3 {
+    padding: 16px !important;
+  }
+  
+  .payment-stat-value {
+    font-size: 20px;
+  }
+  
+  .payment-stat-icon-wrapper {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+  
+  .payment-hover-effect {
+    display: none;
+  }
+  
+  /* Winners responsive */
+  .winners-list {
+    max-height: 300px;
+    gap: 4px;
+  }
+  
+  .winner-item {
+    padding: 6px 10px;
+    gap: 8px;
+  }
+  
+  .winner-rank {
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    font-size: 12px;
+    border-radius: 6px;
+  }
+  
+  .winner-item:nth-child(1) .winner-rank {
+    font-size: 15px;
+  }
+  
+  .winner-item:nth-child(2) .winner-rank,
+  .winner-item:nth-child(3) .winner-rank {
+    font-size: 13px;
+  }
+  
+  .winner-item:nth-child(n+4) .winner-rank {
+    font-size: 10px;
+  }
+  
+  .winner-name {
+    font-size: 13px;
+    font-weight: 600;
+    max-width: 100%;
+  }
+  
+  .winner-game {
+    font-size: 10px;
+  }
+  
+  .winner-game::before {
+    font-size: 10px;
+  }
+  
+  .winner-prize {
+    font-size: 13px;
+    padding: 3px 10px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -612,22 +1035,68 @@
     grid-template-columns: 1fr;
   }
   
+  .payment-stats-container {
+    grid-template-columns: 1fr;
+  }
+  
   .winner-item {
-    padding: 10px;
+    padding: 4px 8px;
+    gap: 6px;
   }
   
   .winner-rank {
-    width: 32px;
-    height: 32px;
-    font-size: 16px;
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    font-size: 10px;
+    border-radius: 4px;
+  }
+  
+  .winner-item:nth-child(1) .winner-rank {
+    font-size: 12px;
+  }
+  
+  .winner-item:nth-child(2) .winner-rank,
+  .winner-item:nth-child(3) .winner-rank {
+    font-size: 11px;
+  }
+  
+  .winner-item:nth-child(n+4) .winner-rank {
+    font-size: 8px;
   }
   
   .winner-name {
-    font-size: 13px;
+    font-size: 12px;
+    font-weight: 600;
+    max-width: 100%;
+  }
+  
+  .winner-game {
+    font-size: 9px;
+  }
+  
+  .winner-game::before {
+    font-size: 9px;
   }
   
   .winner-prize {
-    font-size: 13px;
+    font-size: 12px;
+    padding: 2px 8px;
+  }
+  
+  .winners-list {
+    max-height: 250px;
+    gap: 3px;
+  }
+  
+  .payment-stats-grid {
+    padding: 14px;
+  }
+  
+  .payment-stat-card.payment-stat-1,
+  .payment-stat-card.payment-stat-2,
+  .payment-stat-card.payment-stat-3 {
+    padding: 18px !important;
   }
 }
 
@@ -649,4 +1118,18 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background: #FBBF24;
+}
+
+/* ========== CLICKABLE STYLES ========== */
+.clickable {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.clickable:hover {
+  transform: translateY(-2px);
+}
+
+.clickable:active {
+  transform: scale(0.98);
 }
