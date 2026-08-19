@@ -121,14 +121,13 @@ const fetchWinners = async (selectedGameId = "") => {
   // Export report
   const handleExportReport = () => {
     const csvContent = [
-      ["Player Name", "Game", "Category", "Prize", "Ticket ID", "Status", "Phone"],
+      ["Player Name", "Game", "Category", "Prize", "Ticket ID", "Phone"],
       ...filteredWinners.map(w => [
         w.playerName,
         w.game,
         w.category,
         w.prize,
         w.ticketId,
-        w.status,
         w.phone || "N/A"
       ])
     ].map(row => row.join(",")).join("\n");
@@ -250,28 +249,7 @@ const fetchWinners = async (selectedGameId = "") => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <div className="filter-group">
-          <select 
-            className="filter-select"
-            value={gameFilter}
-            onChange={(e) => handleGameFilterChange(e.target.value)}
-          >
-            {games.map(game => (
-              <option key={game} value={game}>
-                {game === "all" ? "All Games" : game}
-              </option>
-            ))}
-          </select>
-          <select 
-            className="filter-select"
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-          >
-            <option value="all">All Status</option>
-            <option value="Claimed">Claimed</option>
-            <option value="Pending">Pending</option>
-          </select>
-        </div>
+       
       </div>
 
       {/* Winners Table */}
@@ -291,7 +269,6 @@ const fetchWinners = async (selectedGameId = "") => {
                 <th>Category</th>
                 <th>Prize</th>
                 <th>Date</th>
-                <th>Status</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -320,10 +297,10 @@ const fetchWinners = async (selectedGameId = "") => {
                     </td>
                     <td className="prize-amount">₹{winner.prize.toLocaleString()}</td>
                     <td>{winner.date}</td>
-                    <td>
-                      <span className={`status-badge ${getStatusBadge(winner.status)}`}>
+                    {/* <td> */}
+                      {/* <span className={`status-badge ${getStatusBadge(winner.status)}`}>
                         {winner.status}
-                      </span>
+                      </span> */}
                       {/* <select
                         className={`status-badge ${getStatusBadge(winner.status)}`}
                         value={winner.status}
@@ -332,7 +309,7 @@ const fetchWinners = async (selectedGameId = "") => {
                         <option value="Claimed">Claimed ✅</option>
                         <option value="Pending">Pending ⏳</option>
                       </select> */}
-                    </td>
+                    {/* </td> */}
                     <td>
                       <div className="action-buttons">
                         <button className="action-view" onClick={() => handleViewDetails(winner)}>
