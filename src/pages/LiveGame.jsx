@@ -91,6 +91,10 @@ export default function LiveGame() {
   const [selectedBulkNumbers, setSelectedBulkNumbers] = useState(new Set());
   const [bulkCallStatus, setBulkCallStatus] = useState("");
 
+  // Manual Play State
+  const [manualPlayMode, setManualPlayMode] = useState(false);
+  const [manualSelectedNumbers, setManualSelectedNumbers] = useState([]);
+
   // Refs
   const socketRef = useRef(null);
   const autoRefreshRef = useRef(null);
@@ -138,7 +142,7 @@ export default function LiveGame() {
 
   const getFilteredGames = useCallback(() => {
     let filtered = allGames;
-    
+
     if (activeTab !== "all") {
       filtered = filtered.filter(game => {
         const status = game.status || "upcoming";
@@ -148,7 +152,7 @@ export default function LiveGame() {
         return true;
       });
     }
-    
+
     if (searchTerm.trim()) {
       const term = searchTerm.toLowerCase().trim();
       filtered = filtered.filter(game => {
@@ -157,7 +161,7 @@ export default function LiveGame() {
         return title.includes(term) || id.includes(term);
       });
     }
-    
+
     return filtered;
   }, [allGames, activeTab, searchTerm]);
 
@@ -455,7 +459,7 @@ export default function LiveGame() {
 
       const calledNumber = data.number;
       console.log(`🎯 Number called: ${calledNumber}`);
-      
+
       setCurrent(calledNumber);
 
       setNumbers((prev) => {
@@ -463,11 +467,11 @@ export default function LiveGame() {
           console.log(`ℹ️ Number ${calledNumber} already called, skipping`);
           return prev;
         }
-        
+
         const newNumbers = [...prev, calledNumber];
         console.log(`📊 Numbers: ${prev.length} → ${newNumbers.length}`);
         numbersRef.current = newNumbers;
-        
+
         if (newNumbers.length >= TOTAL_NUMBERS) {
           console.log("🏁🏁🏁 GAME COMPLETED! All 90 numbers called! 🏁🏁🏁");
           setIsGameCompleted(true);
@@ -476,12 +480,12 @@ export default function LiveGame() {
           isRunningRef.current = false;
           addAnnouncement("🎉🎉🎉 GAME COMPLETED! All 90 numbers have been called! 🎉🎉🎉", "success");
         }
-        
+
         setGameHistory((prevHistory) => {
           const newEntry = { number: calledNumber, time: new Date().toLocaleTimeString() };
           return [newEntry, ...prevHistory].slice(0, 20);
         });
-        
+
         const allNumbers = Array.from({ length: TOTAL_NUMBERS }, (_, i) => i + 1);
         const calledSet = new Set(newNumbers);
         setAvailableNumbers(allNumbers.filter(n => !calledSet.has(n)));
@@ -511,7 +515,7 @@ export default function LiveGame() {
       if (data?.calledNumbers && data.calledNumbers.length > 0) {
         const newNumbers = data.calledNumbers;
         const currentNumbers = numbersRef.current || [];
-        
+
         // ✅ ONLY update if new numbers have MORE numbers
         if (newNumbers.length > currentNumbers.length) {
           console.log(`📊 Updating from old_numbers: ${currentNumbers.length} → ${newNumbers.length}`);
@@ -672,6 +676,8 @@ export default function LiveGame() {
     setBulkNumbersInput("");
     setSelectedBulkNumbers(new Set());
     setBulkCallStatus("");
+    setManualPlayMode(false);
+    setManualSelectedNumbers([]);
 
     console.log("🔌 Setting up socket...");
     setupSocket(gameId);
@@ -730,6 +736,8 @@ export default function LiveGame() {
     setIsGameCompleted(false);
     isGameCompletedRef.current = false;
     setSocketConnected(false);
+    setManualPlayMode(false);
+    setManualSelectedNumbers([]);
     console.log("🔄 Fetching games list");
     fetchAllGames();
   };
@@ -964,6 +972,128 @@ export default function LiveGame() {
     }
   };
 
+  // ── Manual Play Functions ──────────────────────────────────────────────
+
+  const toggleManualPlayMode = () => {
+    if (isGameCompleted) {
+      addAnnouncement("⚠️ Game already completed!", "warning");
+      return;
+    }
+
+    if (!selectedRoundId) {
+      addAnnouncement("❌ No active round found", "error");
+      return;
+    }
+
+    if (manualPlayMode) {
+      // Exit manual mode
+      setManualPlayMode(false);
+      setManualSelectedNumbers([]);
+      if (socketRef.current && socketRef.current.connected) {
+        console.log(`📤 Emitting auto_play for game: ${selectedGameId}`);
+        socketRef.current.emit("auto_play", { game_id: selectedGameId });
+      }
+      addAnnouncement("📴 Manual play mode deactivated", "info");
+    } else {
+      // Enter manual mode
+      setManualPlayMode(true);
+      setManualSelectedNumbers([]);
+      if (socketRef.current && socketRef.current.connected) {
+        console.log(`📤 Emitting manual_play for game: ${selectedGameId}`);
+        socketRef.current.emit("manual_play", { game_id: selectedGameId });
+      }
+      addAnnouncement("✋ Manual play mode activated - Click numbers on the grid to select them", "success");
+    }
+  };
+
+  // const handleManualNumberSelect = (num) => {
+  //   if (!manualPlayMode) return;
+
+  //   if (isGameCompleted) {
+  //     addAnnouncement("⚠️ Game already completed!", "warning");
+  //     return;
+  //   }
+
+  //   if (!selectedRoundId) {
+  //   addAnnouncement("❌ No active round found", "error");
+  //   return;
+  // }
+
+  // if (numbers.includes(num) || manualSelectedNumbers.includes(num)) {
+  //   addAnnouncement(`❌ Number ${num} has already been called!`, "error");
+  //   return;
+  // }
+
+  // const pendingNumber = manualSelectedNumbers.find((n) => !numbers.includes(n));
+  // if (pendingNumber) {
+  //   addAnnouncement(`⏳ Please wait, number ${pendingNumber} is still being processed`, "warning");
+  //   return;
+  // }
+  // if (!socketRef.current || !socketRef.current.connected) {
+  //   addAnnouncement("❌ Socket not connected. Cannot call number.", "error");
+  //   return;
+  // }
+
+  //   if (numbers.includes(num)) {
+  //     addAnnouncement(`❌ Number ${num} has already been called!`, "error");
+  //     return;
+  //   }
+
+  //   setManualSelectedNumbers(prev => {
+  //     if (prev.includes(num)) {
+  //       // Deselect if already selected
+  //       addAnnouncement(`➖ Number ${num} deselected`, "info");
+  //       return prev.filter(n => n !== num);
+  //     } else {
+  //       // Select
+  //       addAnnouncement(`✅ Number ${num} selected`, "success");
+  //       return [...prev, num];
+  //     }
+  //   });
+  // };
+
+  const handleManualNumberSelect = (num) => {
+    if (!manualPlayMode) return;
+
+    if (isGameCompleted) {
+      addAnnouncement("⚠️ Game already completed!", "warning");
+      return;
+    }
+
+    if (!selectedRoundId) {
+      addAnnouncement("❌ No active round found", "error");
+      return;
+    }
+
+    if (numbers.includes(num) || manualSelectedNumbers.includes(num)) {
+      addAnnouncement(`❌ Number ${num} has already been called!`, "error");
+      return;
+    }
+
+    const pendingNumber = manualSelectedNumbers.find((n) => !numbers.includes(n));
+    if (pendingNumber) {
+      addAnnouncement(`⏳ Please wait, number ${pendingNumber} is still being processed`, "warning");
+      return;
+    }
+
+    if (!socketRef.current || !socketRef.current.connected) {
+      addAnnouncement("❌ Socket not connected. Cannot call number.", "error");
+      return;
+    }
+
+    setManualSelectedNumbers((prev) => [...prev, num]);
+
+    console.log(`📤 Emitting manual_call_number: ${num}`);
+    socketRef.current.emit("manual_call_number", {
+      game_id: selectedGameId,
+      round_id: selectedRoundId,
+      number: num,
+    });
+
+    addAnnouncement(`📢 Calling number ${num}...`, "info");
+  };
+
+
   // ── Force Refresh Status ───────────────────────────────────────────────
 
   const forceRefreshStatus = async () => {
@@ -1020,7 +1150,7 @@ export default function LiveGame() {
           const newNumbers = [...numbers, num];
           setNumbers(newNumbers);
           numbersRef.current = newNumbers;
-          
+
           if (newNumbers.length >= TOTAL_NUMBERS) {
             setIsGameCompleted(true);
             isGameCompletedRef.current = true;
@@ -1028,7 +1158,7 @@ export default function LiveGame() {
             isRunningRef.current = false;
             addAnnouncement("🎉🎉🎉 GAME COMPLETED! All 90 numbers have been called! 🎉🎉🎉", "success");
           }
-          
+
           const allNumbers = Array.from({ length: TOTAL_NUMBERS }, (_, i) => i + 1);
           const calledSet = new Set(newNumbers);
           setAvailableNumbers(allNumbers.filter(n => !calledSet.has(n)));
@@ -1052,12 +1182,12 @@ export default function LiveGame() {
 
   const handleQuickCallRandom = async () => {
     console.log("🎲 Quick Random called");
-    
+
     if (isGameCompleted) {
       addAnnouncement("⚠️ Game already completed!", "warning");
       return;
     }
-    
+
     const allNumbers = Array.from({ length: TOTAL_NUMBERS }, (_, i) => i + 1);
     const uncalledNumbers = allNumbers.filter(num => !numbers.includes(num));
 
@@ -1190,7 +1320,7 @@ export default function LiveGame() {
 
       if (response.ok) {
         console.log("✅ Bulk call successful!");
-        
+
         const successMessage = result.message || "Bulk call successful!";
         addAnnouncement(`✅ ${successMessage} (${newNumbers.length} numbers)`, "success");
 
@@ -1202,11 +1332,11 @@ export default function LiveGame() {
         }
 
         setBulkCallStatus("success");
-        
+
         setNumbers((prev) => {
           const updatedNumbers = [...prev, ...newNumbers];
           numbersRef.current = updatedNumbers;
-          
+
           if (updatedNumbers.length >= TOTAL_NUMBERS) {
             setIsGameCompleted(true);
             isGameCompletedRef.current = true;
@@ -1214,11 +1344,11 @@ export default function LiveGame() {
             isRunningRef.current = false;
             addAnnouncement("🎉🎉🎉 GAME COMPLETED! All 90 numbers have been called! 🎉🎉🎉", "success");
           }
-          
+
           const allNumbers = Array.from({ length: TOTAL_NUMBERS }, (_, i) => i + 1);
           const calledSet = new Set(updatedNumbers);
           setAvailableNumbers(allNumbers.filter(n => !calledSet.has(n)));
-          
+
           return updatedNumbers;
         });
 
@@ -1233,7 +1363,7 @@ export default function LiveGame() {
         await loadGameStatus(selectedRoundId);
         setBulkNumbersInput("");
         setSelectedBulkNumbers(new Set());
-        
+
         setTimeout(() => setBulkCallStatus(""), 2000);
       } else {
         console.error("❌ Bulk call failed:", result);
@@ -1399,7 +1529,7 @@ export default function LiveGame() {
             SELECT GAME
           </div>
         </div>
-        
+
         <div className="game-selector">
           {/* Search Bar */}
           <div className="selector-search">
@@ -1413,7 +1543,7 @@ export default function LiveGame() {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
               {searchTerm && (
-                <button 
+                <button
                   className="search-clear"
                   onClick={() => setSearchTerm("")}
                   title="Clear search"
@@ -1475,7 +1605,7 @@ export default function LiveGame() {
               <div className="no-games">
                 <div className="no-games-icon">🔍</div>
                 <p>No games match your search or filter.</p>
-                <button 
+                <button
                   className="clear-filters-btn"
                   onClick={() => {
                     setSearchTerm("");
@@ -1491,7 +1621,7 @@ export default function LiveGame() {
                 const isLive = status === "live";
                 const isUpcoming = status === "upcoming";
                 const isCompleted = status === "completed";
-                
+
                 return (
                   <div
                     key={game.game_id}
@@ -1517,7 +1647,7 @@ export default function LiveGame() {
                         <span>Created: {game.formattedCreatedAt || "N/A"}</span>
                       </p>
                     </div>
-                    <button 
+                    <button
                       className={`select-game-btn ${isCompleted ? "disabled" : ""}`}
                       disabled={isCompleted}
                       title={isCompleted ? "Game is completed" : "Manage this game"}
@@ -1533,12 +1663,12 @@ export default function LiveGame() {
           {/* Footer */}
           <div className="selector-footer">
             <span className="footer-info">
-              Total: {allGames.length} games | 
-              Live: {tabCounts.live} | 
-              Upcoming: {tabCounts.upcoming} | 
+              Total: {allGames.length} games |
+              Live: {tabCounts.live} |
+              Upcoming: {tabCounts.upcoming} |
               Completed: {tabCounts.completed}
             </span>
-            <button 
+            <button
               className="refresh-games-btn"
               onClick={fetchAllGames}
               disabled={loading}
@@ -1551,38 +1681,108 @@ export default function LiveGame() {
     );
   }
 
+  const numberColors = [
+    '#FF6B6B', // Red
+    '#4ECDC4', // Teal
+    '#45B7D1', // Blue
+    '#96CEB4', // Green
+    '#FFEAA7', // Yellow
+    '#DDA0DD', // Plum
+    '#FF8A5C', // Orange
+    '#A29BFE', // Purple
+    '#FD79A8', // Pink
+    '#00CEC9', // Cyan
+  ];
+
   // ════════════════════════════════════════════════════════════════════════
   // LIVE GAME VIEW
   // ════════════════════════════════════════════════════════════════════════
 
   return (
     <div className="live-game-container">
-      {/* Header */}
-      <div className="live-header">
+      {/* Header - FIXED VERSION */}
+      <div className="live-header" style={{ position: 'relative', zIndex: 10 }}>
         <div className="header-info">
-          <button className="back-button" onClick={handleBackToGames}>← Back</button>
+          <button
+            className="back-button"
+            onClick={handleBackToGames}
+            style={{ position: 'relative', zIndex: 20 }}
+          >
+            ← Back
+          </button>
           <h1 className="live-title">Live Game</h1>
           <p className="live-subtitle">
             Game ID: {selectedGameId} | Round: {selectedRoundId || "No Round"}
             {!socketConnected && <span className="socket-status"> 🔴 Socket Disconnected</span>}
             {isGameCompleted && <span className="game-complete-badge"> 🏆 COMPLETED</span>}
+            {manualPlayMode && (
+              <span className="manual-play-indicator">
+                <span className="dot"></span>
+                ✋ MANUAL PLAY
+              </span>
+            )}
           </p>
         </div>
-        <div className="header-actions">
-          <button className={`admin-toggle ${showAdminPanel ? "active" : ""}`} onClick={() => setShowAdminPanel((v) => !v)}>
-            {showAdminPanel ? "Hide Admin Panel" : "Show Admin Panel"}
+        <div className="header-actions" style={{ position: 'relative', zIndex: 20 }}>
+          <button
+            className={`admin-toggle ${showAdminPanel ? "active" : ""}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              console.log("🔄 Toggling admin panel from:", showAdminPanel, "to:", !showAdminPanel);
+              setShowAdminPanel(!showAdminPanel);
+            }}
+            style={{
+              background: showAdminPanel ? "linear-gradient(135deg, #dc3545, #c82333)" : "linear-gradient(135deg, #667eea, #764ba2)",
+              color: "#fff",
+              border: "none",
+              borderRadius: "8px",
+              padding: "10px 20px",
+              cursor: "pointer",
+              fontSize: "14px",
+              fontWeight: "bold",
+              transition: "all 0.3s ease",
+              marginRight: "10px",
+              boxShadow: showAdminPanel ? "0 4px 15px rgba(220, 53, 69, 0.4)" : "0 4px 15px rgba(102, 126, 234, 0.3)",
+              position: 'relative',
+              zIndex: 30,
+              pointerEvents: 'auto'
+            }}
+          >
+            {showAdminPanel ? "🔒 Hide Admin" : "🔓 Show Admin"}
           </button>
-          <button className="btn-refresh" onClick={forceRefreshStatus} disabled={loading || !selectedRoundId} style={{
-            background: "#17a2b8", color: "#fff", border: "none", borderRadius: "5px",
-            padding: "8px 15px", cursor: "pointer", fontSize: "14px", fontWeight: "bold", marginRight: "10px"
-          }}>🔄 Refresh</button>
+          <button
+            className="btn-refresh"
+            onClick={(e) => {
+              e.stopPropagation();
+              console.log("🔄 Refresh button clicked");
+              forceRefreshStatus();
+            }}
+            disabled={loading || !selectedRoundId}
+            style={{
+              background: loading || !selectedRoundId ? "#6c757d" : "#17a2b8",
+              color: "#fff",
+              border: "none",
+              borderRadius: "8px",
+              padding: "10px 20px",
+              cursor: loading || !selectedRoundId ? "not-allowed" : "pointer",
+              fontSize: "14px",
+              fontWeight: "bold",
+              marginRight: "10px",
+              transition: "all 0.3s ease",
+              opacity: loading || !selectedRoundId ? 0.6 : 1,
+              position: 'relative',
+              zIndex: 30,
+              pointerEvents: 'auto'
+            }}
+          >
+            {loading ? "⏳ Loading..." : "🔄 Refresh"}
+          </button>
           <div className={`live-status ${isGameCompleted ? "status-completed" : isRunning ? "status-live" : "status-paused"}`}>
             <span className="status-dot"></span>
-            {isGameCompleted ? "🏆 COMPLETED" : isRunning ? "LIVE" : "PAUSED"}
+            {isGameCompleted ? "🏆 COMPLETED" : isRunning ? "🔴 LIVE" : "⏸️ PAUSED"}
           </div>
         </div>
       </div>
-
       {/* Admin Panel */}
       {showAdminPanel && (
         <div className="admin-panel">
@@ -1652,8 +1852,8 @@ export default function LiveGame() {
                 width: "100%",
                 background: isGameCompleted ? "#6c757d" :
                   bulkCallStatus === "success" ? "#28a745" :
-                  bulkCallStatus?.startsWith("error:") ? "#dc3545" :
-                  bulkCallStatus === "calling" ? "#ffc107" : "#007bff",
+                    bulkCallStatus?.startsWith("error:") ? "#dc3545" :
+                      bulkCallStatus === "calling" ? "#ffc107" : "#007bff",
                 color: "#fff",
                 border: "none",
                 borderRadius: "8px",
@@ -1666,11 +1866,11 @@ export default function LiveGame() {
               }}
             >
               {isGameCompleted ? "✅ Game Completed" :
-               loading ? "⏳ Calling..." :
-               bulkCallStatus === "success" ? "✅ Done!" :
-               bulkCallStatus?.startsWith("error:") ? `❌ ${bulkCallStatus.replace("error: ", "")}` :
-               bulkCallStatus === "calling" ? "⏳ Processing..." :
-               `📞 Call ${selectedBulkNumbers.size} Selected Number(s)`}
+                loading ? "⏳ Calling..." :
+                  bulkCallStatus === "success" ? "✅ Done!" :
+                    bulkCallStatus?.startsWith("error:") ? `❌ ${bulkCallStatus.replace("error: ", "")}` :
+                      bulkCallStatus === "calling" ? "⏳ Processing..." :
+                        `📞 Call ${selectedBulkNumbers.size} Selected Number(s)`}
             </button>
           </div>
 
@@ -1708,7 +1908,7 @@ export default function LiveGame() {
         </div>
         <div className="stat-item">
           <span className="stat-label">Status:</span>
-          <span className="stat-value" style={{ 
+          <span className="stat-value" style={{
             color: isGameCompleted ? '#28a745' : socketConnected ? '#17a2b8' : '#dc3545',
             fontWeight: 'bold'
           }}>
@@ -1727,7 +1927,7 @@ export default function LiveGame() {
             </div>
             <div className="current-progress">
               <div className="progress-bar">
-                <div className={`progress-fill ${isGameCompleted ? "completed" : ""}`} 
+                <div className={`progress-fill ${isGameCompleted ? "completed" : ""}`}
                   style={{ width: `${getProgress()}%` }} />
               </div>
             </div>
@@ -1737,51 +1937,102 @@ export default function LiveGame() {
           <div className="control-panel">
             <h3>Controls</h3>
             <div className="control-buttons">
-              <button 
-                className="btn-start" 
+              <button
+                className="btn-start"
                 onClick={startGame}
                 disabled={loading || !selectedRoundId || isRunning || gameStarted || isGameCompleted}
                 title={
                   isGameCompleted ? "Game is completed" :
-                  !selectedRoundId ? "No round selected" :
-                  isRunning ? "Game is already running" :
-                  gameStarted ? "Game already started - use Resume" :
-                  "Start the game"
+                    !selectedRoundId ? "No round selected" :
+                      isRunning ? "Game is already running" :
+                        gameStarted ? "Game already started - use Resume" :
+                          "Start the game"
                 }
               >
                 {loading ? "..." : "▶ Start"}
               </button>
 
-              <button 
-                className="btn-pause" 
+              <button
+                className="btn-pause"
                 onClick={pauseGame}
                 disabled={loading || !selectedRoundId || (!isRunning && !gameStarted) || isGameCompleted}
                 title={
                   isGameCompleted ? "Game is completed" :
-                  !selectedRoundId ? "No round selected" :
-                  (!isRunning && !gameStarted) ? "Game is not running" :
-                  "Pause the game"
+                    !selectedRoundId ? "No round selected" :
+                      (!isRunning && !gameStarted) ? "Game is not running" :
+                        "Pause the game"
                 }
               >
                 ⏸ Pause
               </button>
 
-              <button 
-                className="btn-resume" 
+              <button
+                className="btn-resume"
                 onClick={resumeGame}
                 disabled={loading || !selectedRoundId || isRunning || !gameStarted || isGameCompleted}
                 title={
                   isGameCompleted ? "Game is completed" :
-                  !selectedRoundId ? "No round selected" :
-                  isRunning ? "Game is already running" :
-                  !gameStarted ? "Game not started yet" :
-                  "Resume the game"
+                    !selectedRoundId ? "No round selected" :
+                      isRunning ? "Game is already running" :
+                        !gameStarted ? "Game not started yet" :
+                          "Resume the game"
                 }
               >
                 ▶ Resume
               </button>
+
+              <button
+                className={`btn-manual-play ${manualPlayMode ? 'active' : ''}`}
+                onClick={toggleManualPlayMode}
+                disabled={loading || !selectedRoundId || isGameCompleted}
+                title={
+                  isGameCompleted ? "Game is completed" :
+                    !selectedRoundId ? "No round selected" :
+                      manualPlayMode ? "Exit manual play mode" :
+                        "Enter manual play mode to select numbers from grid"
+                }
+              >
+                {manualPlayMode ? '✋ Exit Manual' : '✋ Manual Play'}
+              </button>
+            </div>
+
+            {/* Manual Play Controls */}
+            {manualPlayMode && (
+              <div className="manual-controls">
+                <span className="info-text">
+                  👆 Click a number on the grid to call it — one at a time, cannot be undone
+                </span>
+                <span className="selected-count">{manualSelectedNumbers.length} called manually</span>
+                {manualSelectedNumbers.some((n) => !numbers.includes(n)) && (
+                  <span className="pending-text">⏳ Waiting for confirmation...</span>
+                )}
+              </div>
+            )}
+          </div>
+          <div className="last-numbers">
+            <h3>🔄 Last 10 Numbers</h3>
+            <div className="last-numbers-grid">
+              {lastTen.map((n, i) => (
+                <span
+                  key={i}
+                  style={{
+                    backgroundColor: numberColors[i % numberColors.length],
+                    color: '#fff',
+                    padding: '8px 16px',
+                    borderRadius: '8px',
+                    display: 'inline-block',
+                    fontWeight: 'bold'
+                  }}
+                >
+                  {n}
+                </span>
+              ))}
             </div>
           </div>
+
+        </div>
+
+        <div className="live-right">
 
           <div className="winners-panel">
             <h3>🏆 Winners</h3>
@@ -1796,31 +2047,30 @@ export default function LiveGame() {
             </div>
           </div>
         </div>
-
-        <div className="live-right">
-          <div className="last-numbers">
-            <h3>🔄 Last 10 Numbers</h3>
-            <div className="last-numbers-grid">
-              {lastTen.map((n, i) => (
-                <span key={i} className="last-number">{n}</span>
-              ))}
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Numbers board */}
       <div className="numbers-grid-section">
         <h3>
-          🔢 Numbers Board 
+          🔢 Numbers Board
           {isGameCompleted && (
-            <span style={{ 
-              color: '#28a745', 
+            <span style={{
+              color: '#28a745',
               marginLeft: '10px',
               fontSize: '18px',
               fontWeight: 'bold'
             }}>
               ✅ COMPLETE
+            </span>
+          )}
+          {manualPlayMode && !isGameCompleted && (
+            <span style={{
+              color: '#f43f5e',
+              marginLeft: '10px',
+              fontSize: '16px',
+              fontWeight: 'bold'
+            }}>
+              ✋ Select numbers to announce
             </span>
           )}
         </h3>
@@ -1829,10 +2079,29 @@ export default function LiveGame() {
             const n = i + 1;
             const called = numbers.includes(n);
             const isCurrent = current === n;
+            const isManualSelected = manualSelectedNumbers.includes(n);
+            const isClickable = manualPlayMode && !called && !isGameCompleted &&
+              !manualSelectedNumbers.some((n) => !numbers.includes(n));
+
             return (
-              <div 
-                key={n} 
-                className={`number-cell${called ? " called" : ""}${isCurrent ? " current" : ""}`}
+              <div
+                key={n}
+                className={`number-cell${called ? " called" : ""}${isCurrent ? " current" : ""}${isManualSelected ? " manual-selected" : ""}`}
+                onClick={() => {
+                  if (isClickable) {
+                    handleManualNumberSelect(n);
+                  }
+                }}
+                style={{
+                  cursor: isClickable ? 'pointer' : 'default',
+                }}
+                title={
+                  isGameCompleted ? "Game completed" :
+                    called ? `Number ${n} already called` :
+                      isManualSelected ? `Number ${n} selected for announcement` :
+                        manualPlayMode ? `Click to select number ${n}` :
+                          `Number ${n}`
+                }
               >
                 {n}
               </div>

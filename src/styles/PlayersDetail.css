@@ -357,7 +357,11 @@
 }
 
 .custom-table th:nth-child(5),
-.custom-table td:nth-child(5),
+.custom-table td:nth-child(5) {
+  width: 100px;
+  text-align: right;
+}
+
 .custom-table th:nth-child(6),
 .custom-table td:nth-child(6) {
   width: 120px;
@@ -378,7 +382,7 @@
 
 .custom-table th:nth-child(9),
 .custom-table td:nth-child(9) {
-  width: 320px;
+  width: 380px;
   text-align: center;
   padding: 8px 10px;
 }
@@ -538,6 +542,10 @@
   transform: translateY(-1px);
 }
 
+/* ============================================
+   VIEW TRANSACTION BUTTON WITH PENDING BADGE
+   ============================================ */
+
 .transaction-btn {
   background: #f59e0b;
   color: white;
@@ -550,11 +558,46 @@
   transition: all 0.2s;
   white-space: nowrap;
   min-width: 70px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  position: relative;
 }
 
 .transaction-btn:hover {
   background: #d97706;
   transform: translateY(-1px);
+}
+
+.transaction-btn .pending-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #dc2626;
+  color: white;
+  font-size: 8px;
+  font-weight: 700;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 50%;
+  line-height: 1;
+  margin-left: 2px;
+  animation: pulse-badge 2s infinite;
+}
+
+.transaction-btn.has-pending {
+  background: #d97706;
+}
+
+@keyframes pulse-badge {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
 }
 
 .action-buttons {
@@ -614,7 +657,7 @@
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42,  ￼0.6);
+  background: rgba(15, 23, 42, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -640,7 +683,7 @@
   max-width: 480px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 25px 60px rgba(0,  ￼0, 0, 0.25);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
   animation: slideUp 0.25s ease;
 }
 
@@ -1088,6 +1131,19 @@
   .payment-status-icon {
     font-size: 24px;
   }
+  
+  /* Action buttons responsive */
+  .action-buttons {
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .view-btn, .kyc-btn, .transaction-btn, .game-history-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 4px 8px;
+    font-size: 10px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -1106,12 +1162,12 @@
   }
   
   .action-buttons {
-    gap: 1px;
+    gap: 2px;
   }
   
   .view-btn, .kyc-btn, .transaction-btn, .game-history-btn {
     padding: 2px 4px;
-    font-size: 7px;
+    font-size: 8px;
     min-width: 30px;
   }
   
@@ -1134,6 +1190,12 @@
   
   .payment-status-section {
     padding: 16px;
+  }
+  
+  .transaction-btn .pending-badge {
+    font-size: 7px;
+    min-width: 14px;
+    height: 14px;
   }
 }
 

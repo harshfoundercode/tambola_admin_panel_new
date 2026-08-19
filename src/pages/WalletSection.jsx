@@ -11,6 +11,10 @@ const AdminCommissionWallet = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedAgent, setSelectedAgent] = useState(null);
   
+  // Filter states
+  const [filterType, setFilterType] = useState('all');
+  const [filterStatus, setFilterStatus] = useState('all');
+  
   // State for API data
   const [loading, setLoading] = useState({
     dashboard: false,
@@ -191,6 +195,40 @@ const AdminCommissionWallet = () => {
     }
   };
 
+  // ===== FILTER LOGIC =====
+  // Filter transactions based on search query, type, and status
+  const filteredTransactions = transactions.filter(tx => {
+    // Search filter
+    if (searchQuery) {
+      const searchLower = searchQuery.toLowerCase();
+      const matchesSearch = 
+        (tx.title || '').toLowerCase().includes(searchLower) ||
+        (tx.name || '').toLowerCase().includes(searchLower) ||
+        (tx.account_type || '').toLowerCase().includes(searchLower) ||
+        (tx.description || '').toLowerCase().includes(searchLower);
+      
+      if (!matchesSearch) return false;
+    }
+
+    // Type filter
+    if (filterType !== 'all') {
+      const txType = (tx.type || '').toLowerCase();
+      if (txType !== filterType.toLowerCase()) {
+        return false;
+      }
+    }
+
+    // Status filter
+    if (filterStatus !== 'all') {
+      const txStatus = (tx.status || '').toLowerCase();
+      if (txStatus !== filterStatus.toLowerCase()) {
+        return false;
+      }
+    }
+
+    return true;
+  });
+
   // ===== STYLES =====
   const styles = {
     container: {
@@ -339,7 +377,8 @@ const AdminCommissionWallet = () => {
       color: '#1e293b',
       outline: 'none',
       cursor: 'pointer',
-      transition: 'border-color 0.2s ease'
+      transition: 'border-color 0.2s ease',
+      minWidth: '140px'
     },
     transactionItem: {
       display: 'flex',
@@ -555,12 +594,14 @@ const AdminCommissionWallet = () => {
         <span style={styles.statLabel}>{label}</span>
         <span style={styles.statValue}>{value}</span>
       </div>
-     
+      <div style={{...styles.statIcon, ...iconColor}}>
+        <i className={icon}></i>
+      </div>
     </div>
   );
 
   const TransactionRow = ({ transaction }) => {
-    const isCredit = transaction.type === 'credit';
+    const isCredit = transaction.type?.toLowerCase() === 'credit';
     
     return (
       <div style={styles.transactionItem}>
@@ -572,7 +613,7 @@ const AdminCommissionWallet = () => {
             <i className={`fas fa-arrow-${isCredit ? 'up' : 'down'}`}></i>
           </div>
           <div>
-            <div style={styles.txTitle}>{transaction.title || 'Transaction'}</div>
+            <div style={styles.txTitle}>{transaction.title || transaction.description || 'Transaction'}</div>
             <div style={styles.txDate}>
               {transaction.created_at || transaction.date || 'N/A'}
             </div>
@@ -769,15 +810,6 @@ const AdminCommissionWallet = () => {
     );
   };
 
-  // Filter transactions based on search query
-  const filteredTransactions = transactions.filter(tx => {
-    if (!searchQuery) return true;
-    const searchLower = searchQuery.toLowerCase();
-    return (tx.title || '').toLowerCase().includes(searchLower) ||
-           (tx.name || '').toLowerCase().includes(searchLower) ||
-           (tx.account_type || '').toLowerCase().includes(searchLower);
-  });
-
   // ===== RENDER =====
   return (
     <div style={styles.container}>
@@ -842,6 +874,12 @@ const AdminCommissionWallet = () => {
               onClick={() => {
                 setActiveTab(tab);
                 setSelectedAgent(null);
+                // Reset filters when switching tabs
+                if (tab === 'transactions') {
+                  setFilterType('all');
+                  setFilterStatus('all');
+                  setSearchQuery('');
+                }
               }}
             >
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -870,17 +908,58 @@ const AdminCommissionWallet = () => {
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </div>
-                <select style={styles.filterSelect}>
-                  <option>All Types</option>
-                  <option>Credit</option>
-                  <option>Debit</option>
+                <select 
+                  style={styles.filterSelect}
+                  value={filterType}
+                  onChange={(e) => setFilterType(e.target.value)}
+                >
+                  <option value="all">All Types</option>
+                  <option value="credit">Credit</option>
+                  <option value="debit">Debit</option>
                 </select>
-                <select style={styles.filterSelect}>
-                  <option>All Status</option>
-                  <option>Success</option>
-                  <option>Pending</option>
-                  <option>Failed</option>
+                <select 
+                  style={styles.filterSelect}
+                  value={filterStatus}
+                  onChange={(e) => setFilterStatus(e.target.value)}
+                >
+                  <option value="all">All Status</option>
+                  <option value="success">Success</option>
+                  <option value="pending">Pending</option>
+                  <option value="failed">Failed</option>
                 </select>
+                {/* Show filter count */}
+                {(filterType !== 'all' || filterStatus !== 'all' || searchQuery) && (
+                  <span style={{
+                    padding: '8px 16px',
+                    backgroundColor: '#e2e8f0',
+                    borderRadius: '8px',
+                    fontSize: '13px',
+                    color: '#475569',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px'
+                  }}>
+                    <i className="fas fa-filter"></i>
+                    {filteredTransactions.length} results
+                    <button
+                      onClick={() => {
+                        setFilterType('all');
+                        setFilterStatus('all');
+                        setSearchQuery('');
+                      }}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        color: '#dc2626',
+                        cursor: 'pointer',
+                        fontSize: '14px',
+                        fontWeight: '600'
+                      }}
+                    >
+                      × Clear
+                    </button>
+                  </span>
+                )}
               </div>
 
               {loading.transactions ? (
@@ -895,7 +974,9 @@ const AdminCommissionWallet = () => {
               ) : filteredTransactions.length === 0 ? (
                 <div style={styles.noData}>
                   <i className="fas fa-inbox" style={{ fontSize: '32px', display: 'block', marginBottom: '8px' }}></i>
-                  {searchQuery ? 'No transactions match your search' : 'No transactions found'}
+                  {searchQuery || filterType !== 'all' || filterStatus !== 'all' 
+                    ? 'No transactions match your filters' 
+                    : 'No transactions found'}
                 </div>
               ) : (
                 filteredTransactions.map((tx, index) => (
@@ -1007,6 +1088,10 @@ const AdminCommissionWallet = () => {
         }
         .action-link:hover {
           color: #1d4ed8;
+        }
+        select:focus, input:focus {
+          border-color: #2563eb;
+          box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
       `}</style>
     </div>

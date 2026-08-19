@@ -347,7 +347,6 @@ export default function Dashboard() {
       <div className="table-section">
         <div className="section-header">
           <h3>📋 Recent Games</h3>
-          <button className="view-all-btn">View All →</button>
         </div>
         <div className="table-wrapper">
           <table className="games-table">

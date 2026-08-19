@@ -494,7 +494,6 @@ function WithdrawalRequests() {
                   <div className={styles.infoGrid}>
                     <div><p className={styles.infoLabel}>Name</p><p className={styles.infoValue}>{selectedRequest.user_name}</p></div>
                     <div><p className={styles.infoLabel}>Phone</p><p className={styles.infoValue}>{selectedRequest.phone}</p></div>
-                    <div><p className={styles.infoLabel}>Email</p><p className={styles.infoValue}>{selectedRequest.email||'N/A'}</p></div>
                     <div><p className={styles.infoLabel}>User ID</p><p className={styles.infoValue}>#{selectedRequest.user_id}</p></div>
                     {selectedRequest.kyc_status && (
                       <div><p className={styles.infoLabel}>KYC Status</p>

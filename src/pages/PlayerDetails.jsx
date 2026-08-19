@@ -16,6 +16,13 @@
 //   const [kycData, setKycData] = useState(null);
 //   const [kycLoading, setKycLoading] = useState(false);
   
+//   // New state for payment status counts
+//   const [paymentStatus, setPaymentStatus] = useState({
+//     total: 0,
+//     pending: 0,
+//     success: 0
+//   });
+  
 //   // Reject reason modal states
 //   const [showRejectModal, setShowRejectModal] = useState(false);
 //   const [rejectReason, setRejectReason] = useState("");
@@ -39,6 +46,15 @@
 //       console.log("Get User Details response", response);
 //       if (response.success && response.data) {
 //         setData(response.data);
+        
+//         // Extract status_count from response
+//         if (response.status_count) {
+//           setPaymentStatus({
+//             total: response.status_count.total || 0,
+//             pending: response.status_count.pending || 0,
+//             success: response.status_count.success || 0
+//           });
+//         }
 //       } else {
 //         setError(response.message || "Failed to load player details");
 //       }
@@ -459,6 +475,36 @@
 //         </div>
 //       </div>
 
+//       {/* Payment Status Cards - New Section */}
+//       <div className="payment-status-section">
+//         <h3 className="payment-status-title">💳 Payment Status</h3>
+//         <div className="payment-status-grid">
+//           <div className="payment-status-card total-card">
+//             <div className="payment-status-icon">📋</div>
+//             <div className="payment-status-info">
+//               <div className="payment-status-label">Total Requests</div>
+//               <div className="payment-status-value">{paymentStatus.total}</div>
+//             </div>
+//           </div>
+          
+//           <div className="payment-status-card pending-card">
+//             <div className="payment-status-icon">⏳</div>
+//             <div className="payment-status-info">
+//               <div className="payment-status-label">Pending</div>
+//               <div className="payment-status-value">{paymentStatus.pending}</div>
+//             </div>
+//           </div>
+          
+//           <div className="payment-status-card success-card">
+//             <div className="payment-status-icon">✅</div>
+//             <div className="payment-status-info">
+//               <div className="payment-status-label">Successful</div>
+//               <div className="payment-status-value">{paymentStatus.success}</div>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+
 //       <div className="filters-section">
 //         <div className="search-bar">
 //           <svg className="search-icon" viewBox="0 0 20 20" fill="none">
@@ -513,54 +559,66 @@
 //                 <th>Referral Code</th>
 //                 <th>Wallet</th>
 //                 <th>Total Deposit</th>
-//                 <th>User verifaction status</th>
-//                 <th>Kcy status</th>
+//                 <th>User Verification</th>
+//                 <th>KYC Status</th>
 //                 <th>Action</th>
 //               </tr>
 //             </thead>
 //             <tbody>
 //               {filteredData.length > 0 ? (
-//                 filteredData.map((item, index) => (
-//                   <tr key={item.user_id}>
-//                     <td>{index + 1}</td>
-//                     <td className="player-name">{item.first_name} {item.last_name}</td>
-//                     <td>{item.phone}</td>
-//                     <td className="text-center">{item.referral_code}</td>
-//                     <td className="amount">₹{(item.wallet || 0).toLocaleString()}</td>
-//                     <td className="amount">₹{(item.total_deposit || 0).toLocaleString()}</td>
-//                     <td>
-//                       <span className={`verify-badge ${item.is_verified ? "v-yes" : "v-no"}`}>
-//                         {item.is_verified ? "Verified" : "Unverified"}
-//                       </span>
-//                     </td>
-//                     <td>
-//                       <select 
-//                         className={`kyc-status-dropdown kyc-${item.kyc_status || 'pending'}`}
-//                         value={item.kyc_status || "pending"}
-//                         onChange={(e) => handleKycStatusChange(
-//                           item.user_id, 
-//                           e.target.value, 
-//                           item.kyc_id, 
-//                           item.kyc_status
-//                         )}
-//                       >
-//                         <option value="pending">Pending</option>
-//                         <option value="verified">Verified</option>
-//                         <option value="rejected">Rejected</option>
-//                       </select>
-//                     </td>
-//                     <td>
-//                       <div className="action-buttons">
-//                         <button className="view-btn" onClick={() => setSelectedPlayer(item)}>View</button>
-//                         <button className="kyc-btn" onClick={() => handleViewKyc(item.user_id)} disabled={kycLoading}>
-//                           {kycLoading ? "Loading..." : "View KYC"}
-//                         </button>
-//                         <button className="transaction-btn" onClick={() => handleViewTransaction(item.user_id, `${item.first_name} ${item.last_name}`)}>View Transaction</button>
-//                         <button className="game-history-btn" onClick={() => handleViewGameHistory(item.user_id, `${item.first_name} ${item.last_name}`)}>View Game History</button>
-//                       </div>
-//                     </td>
-//                   </tr>
-//                 ))
+//                 filteredData.map((item, index) => {
+//                   const pendingCount = item.manual_payment_count?.pending || 0;
+//                   return (
+//                     <tr key={item.user_id}>
+//                       <td>{index + 1}</td>
+//                       <td className="player-name">{item.first_name} {item.last_name}</td>
+//                       <td>{item.phone}</td>
+//                       <td className="text-center">{item.referral_code}</td>
+//                       <td className="amount">₹{(item.wallet || 0).toLocaleString()}</td>
+//                       <td className="amount">₹{(item.total_deposit || 0).toLocaleString()}</td>
+//                       <td>
+//                         <span className={`verify-badge ${item.is_verified ? "v-yes" : "v-no"}`}>
+//                           {item.is_verified ? "Verified" : "Unverified"}
+//                         </span>
+//                       </td>
+//                       <td>
+//                         <select 
+//                           className={`kyc-status-dropdown kyc-${item.kyc_status || 'pending'}`}
+//                           value={item.kyc_status || "pending"}
+//                           onChange={(e) => handleKycStatusChange(
+//                             item.user_id, 
+//                             e.target.value, 
+//                             item.kyc_id, 
+//                             item.kyc_status
+//                           )}
+//                         >
+//                           <option value="pending">Pending</option>
+//                           <option value="verified">Verified</option>
+//                           <option value="rejected">Rejected</option>
+//                         </select>
+//                       </td>
+//                       <td>
+//                         <div className="action-buttons">
+//                           <button className="view-btn" onClick={() => setSelectedPlayer(item)}>View</button>
+//                           <button className="kyc-btn" onClick={() => handleViewKyc(item.user_id)} disabled={kycLoading}>
+//                             {kycLoading ? "Loading..." : "View KYC"}
+//                           </button>
+//                           {/* ✅ View Transaction button with pending count */}
+//                           <button 
+//                             className={`transaction-btn ${pendingCount > 0 ? 'has-pending' : ''}`} 
+//                             onClick={() => handleViewTransaction(item.user_id, `${item.first_name} ${item.last_name}`)}
+//                           >
+//                             View Transaction
+//                             {pendingCount > 0 && (
+//                               <span className="pending-badge">{pendingCount}</span>
+//                             )}
+//                           </button>
+//                           <button className="game-history-btn" onClick={() => handleViewGameHistory(item.user_id, `${item.first_name} ${item.last_name}`)}>View Game History</button>
+//                         </div>
+//                       </td>
+//                     </tr>
+//                   );
+//                 })
 //               ) : (
 //                 <tr>
 //                   <td colSpan="9" className="no-data">
@@ -611,7 +669,7 @@ function PlayerDetails() {
   const [verifyFilter, setVerifyFilter] = useState("all");
   const [showKycModal, setShowKycModal] = useState(false);
   const [kycData, setKycData] = useState(null);
-  const [kycLoading, setKycLoading] = useState(false);
+  const [kycLoading, setKycLoading] = useState({}); // Changed to object for individual loading states
   
   // New state for payment status counts
   const [paymentStatus, setPaymentStatus] = useState({
@@ -664,7 +722,9 @@ function PlayerDetails() {
   };
 
   const handleViewKyc = async (userId) => {
-    setKycLoading(true);
+    // Set loading for specific user
+    setKycLoading(prev => ({ ...prev, [userId]: true }));
+    
     try {
       console.log("Fetching KYC for user ID:", userId);
       const response = await getUserKycAPI(userId);
@@ -680,7 +740,8 @@ function PlayerDetails() {
       console.error("Error fetching KYC:", err);
       toast.error("Failed to load KYC details: " + (err.message || "Unknown error"));
     } finally {
-      setKycLoading(false);
+      // Clear loading for specific user
+      setKycLoading(prev => ({ ...prev, [userId]: false }));
     }
   };
 
@@ -1156,54 +1217,73 @@ function PlayerDetails() {
                 <th>Referral Code</th>
                 <th>Wallet</th>
                 <th>Total Deposit</th>
-                <th>User verifaction status</th>
-                <th>Kcy status</th>
+                <th>User Verification</th>
+                <th>KYC Status</th>
                 <th>Action</th>
               </tr>
             </thead>
             <tbody>
               {filteredData.length > 0 ? (
-                filteredData.map((item, index) => (
-                  <tr key={item.user_id}>
-                    <td>{index + 1}</td>
-                    <td className="player-name">{item.first_name} {item.last_name}</td>
-                    <td>{item.phone}</td>
-                    <td className="text-center">{item.referral_code}</td>
-                    <td className="amount">₹{(item.wallet || 0).toLocaleString()}</td>
-                    <td className="amount">₹{(item.total_deposit || 0).toLocaleString()}</td>
-                    <td>
-                      <span className={`verify-badge ${item.is_verified ? "v-yes" : "v-no"}`}>
-                        {item.is_verified ? "Verified" : "Unverified"}
-                      </span>
-                    </td>
-                    <td>
-                      <select 
-                        className={`kyc-status-dropdown kyc-${item.kyc_status || 'pending'}`}
-                        value={item.kyc_status || "pending"}
-                        onChange={(e) => handleKycStatusChange(
-                          item.user_id, 
-                          e.target.value, 
-                          item.kyc_id, 
-                          item.kyc_status
-                        )}
-                      >
-                        <option value="pending">Pending</option>
-                        <option value="verified">Verified</option>
-                        <option value="rejected">Rejected</option>
-                      </select>
-                    </td>
-                    <td>
-                      <div className="action-buttons">
-                        <button className="view-btn" onClick={() => setSelectedPlayer(item)}>View</button>
-                        <button className="kyc-btn" onClick={() => handleViewKyc(item.user_id)} disabled={kycLoading}>
-                          {kycLoading ? "Loading..." : "View KYC"}
-                        </button>
-                        <button className="transaction-btn" onClick={() => handleViewTransaction(item.user_id, `${item.first_name} ${item.last_name}`)}>View Transaction</button>
-                        <button className="game-history-btn" onClick={() => handleViewGameHistory(item.user_id, `${item.first_name} ${item.last_name}`)}>View Game History</button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
+                filteredData.map((item, index) => {
+                  const pendingCount = item.manual_payment_count?.pending || 0;
+                  // Check if this specific user's KYC is loading
+                  const isKycLoading = kycLoading[item.user_id] || false;
+                  
+                  return (
+                    <tr key={item.user_id}>
+                      <td>{index + 1}</td>
+                      <td className="player-name">{item.first_name} {item.last_name}</td>
+                      <td>{item.phone}</td>
+                      <td className="text-center">{item.referral_code}</td>
+                      <td className="amount">₹{(item.wallet || 0).toLocaleString()}</td>
+                      <td className="amount">₹{(item.total_deposit || 0).toLocaleString()}</td>
+                      <td>
+                        <span className={`verify-badge ${item.is_verified ? "v-yes" : "v-no"}`}>
+                          {item.is_verified ? "Verified" : "Unverified"}
+                        </span>
+                      </td>
+                      <td>
+                        <select 
+                          className={`kyc-status-dropdown kyc-${item.kyc_status || 'pending'}`}
+                          value={item.kyc_status || "pending"}
+                          onChange={(e) => handleKycStatusChange(
+                            item.user_id, 
+                            e.target.value, 
+                            item.kyc_id, 
+                            item.kyc_status
+                          )}
+                        >
+                          <option value="pending">Pending</option>
+                          <option value="verified">Verified</option>
+                          <option value="rejected">Rejected</option>
+                        </select>
+                      </td>
+                      <td>
+                        <div className="action-buttons">
+                          <button className="view-btn" onClick={() => setSelectedPlayer(item)}>View</button>
+                          <button 
+                            className="kyc-btn" 
+                            onClick={() => handleViewKyc(item.user_id)} 
+                            disabled={isKycLoading}
+                          >
+                            {isKycLoading ? "Loading..." : "View KYC"}
+                          </button>
+                          {/* ✅ View Transaction button with pending count */}
+                          <button 
+                            className={`transaction-btn ${pendingCount > 0 ? 'has-pending' : ''}`} 
+                            onClick={() => handleViewTransaction(item.user_id, `${item.first_name} ${item.last_name}`)}
+                          >
+                            View Transaction
+                            {pendingCount > 0 && (
+                              <span className="pending-badge">{pendingCount}</span>
+                            )}
+                          </button>
+                          <button className="game-history-btn" onClick={() => handleViewGameHistory(item.user_id, `${item.first_name} ${item.last_name}`)}>View Game History</button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
               ) : (
                 <tr>
                   <td colSpan="9" className="no-data">

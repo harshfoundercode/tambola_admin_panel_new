@@ -59,8 +59,16 @@
   border-left: 4px solid #3B82F6;
 }
 
-.stat-card.yellow {
-  border-left: 4px solid #FBBF24;
+.stat-card.red {
+  border-left: 4px solid #EF4444;
+}
+
+.stat-card.orange {
+  border-left: 4px solid #F59E0B;
+}
+
+.stat-card.green {
+  border-left: 4px solid #10B981;
 }
 
 .stat-icon {
@@ -128,7 +136,9 @@
   box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
 }
 
-.games-search-input::placeholder { color: #CBD5E1; }
+.games-search-input::placeholder { 
+  color: #CBD5E1; 
+}
 
 .games-search-clear {
   position: absolute;
@@ -142,7 +152,9 @@
   padding: 2px;
 }
 
-.games-search-clear:hover { color: #64748B; }
+.games-search-clear:hover { 
+  color: #64748B; 
+}
 
 .games-filter-tabs {
   display: flex;
@@ -171,12 +183,31 @@
   white-space: nowrap;
 }
 
-.games-filter-tab:hover { border-color: #94A3B8; color: #334155; }
+.games-filter-tab:hover { 
+  border-color: #94A3B8; 
+  color: #334155; 
+}
 
-.games-filter-tab.active          { background: #1E3A8A; border-color: #1E3A8A; color: #fff; }
-.games-filter-tab.active.live     { background: #1E3A8A; border-color: #1E3A8A; }
-.games-filter-tab.active.upcoming { background: #D97706; border-color: #D97706; }
-.games-filter-tab.active.completed{ background: #059669; border-color: #059669; }
+.games-filter-tab.active { 
+  background: #1E3A8A; 
+  border-color: #1E3A8A; 
+  color: #fff; 
+}
+
+.games-filter-tab.active.live { 
+  background: #DC2626; 
+  border-color: #DC2626; 
+}
+
+.games-filter-tab.active.upcoming { 
+  background: #D97706; 
+  border-color: #D97706; 
+}
+
+.games-filter-tab.active.completed { 
+  background: #059669; 
+  border-color: #059669; 
+}
 
 /* ========== TABLE CONTAINER ========== */
 .games-table-container {
@@ -187,9 +218,14 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
+.games-table-wrapper {
+  overflow-x: auto;
+}
+
 .games-table {
   width: 100%;
   border-collapse: collapse;
+  min-width: 800px;
 }
 
 .games-table thead {
@@ -205,6 +241,7 @@
   color: #1E3A8A;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  white-space: nowrap;
 }
 
 .games-table td {
@@ -212,6 +249,7 @@
   border-bottom: 1px solid #F1F5F9;
   font-size: 14px;
   color: #334155;
+  vertical-align: middle;
 }
 
 .games-table tbody tr {
@@ -222,9 +260,76 @@
   background: #F8FAFC;
 }
 
-.game-title {
+/* ========== TABLE CELL STYLES ========== */
+.game-id {
+  font-weight: 700;
+  color: #1E3A8A;
+  font-size: 13px;
+}
+
+.game-title .title-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.game-title .title {
   font-weight: 600;
   color: #1E3A8A;
+  font-size: 14px;
+}
+
+.game-title .bonus-info {
+  font-size: 11px;
+  color: #64748B;
+  background: #F1F5F9;
+  padding: 2px 8px;
+  border-radius: 12px;
+  width: fit-content;
+}
+
+.game-datetime {
+  font-size: 12px;
+  color: #64748B;
+  white-space: nowrap;
+}
+
+.tickets-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tickets-wrapper .total {
+  font-weight: 600;
+  color: #1E3A8A;
+}
+
+.tickets-wrapper .cycle {
+  font-size: 11px;
+  color: #64748B;
+}
+
+.price-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.price-wrapper .price {
+  font-weight: 600;
+  color: #059669;
+}
+
+.price-wrapper .commission {
+  font-size: 11px;
+  color: #64748B;
+}
+
+.winners-count {
+  font-weight: 600;
+  color: #D97706;
+  text-align: center;
 }
 
 /* ========== STATUS BADGES ========== */
@@ -258,12 +363,9 @@
 }
 
 @keyframes pulse {
-
-  0%,
-  100% {
+  0%, 100% {
     opacity: 1;
   }
-
   50% {
     opacity: 0.6;
   }
@@ -273,9 +375,66 @@
 .actions-cell {
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
-.action-edit,
+.action-view {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #059669;
+  color: white;
+  white-space: nowrap;
+}
+
+.action-view:hover {
+  background: #047857;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(5, 150, 105, 0.3);
+}
+
+.action-edit {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #3B82F6;
+  color: white;
+  white-space: nowrap;
+}
+
+.action-edit:hover:not(:disabled) {
+  background: #2563EB;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.3);
+}
+
+/* ===== FIXED: DISABLED STATE FOR ACTION EDIT ===== */
+.action-edit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #e5e7eb;
+  color: #9ca3af;
+}
+
+.action-edit:disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
 .action-delete {
   padding: 6px 14px;
   border: none;
@@ -287,22 +446,9 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-}
-
-.action-edit {
-  background: #3B82F6;
-  color: white;
-}
-
-.action-edit:hover {
-  background: #2563EB;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.3);
-}
-
-.action-delete {
   background: #EF4444;
   color: white;
+  white-space: nowrap;
 }
 
 .action-delete:hover {
@@ -329,7 +475,6 @@
   from {
     opacity: 0;
   }
-
   to {
     opacity: 1;
   }
@@ -350,7 +495,6 @@
     transform: translateY(20px);
     opacity: 0;
   }
-
   to {
     transform: translateY(0);
     opacity: 1;
@@ -446,7 +590,6 @@
   border-radius: 10px;
   background: #F8FAFC;
   overflow: hidden;
-  /* IMPORTANT */
   transition: all 0.2s ease;
 }
 
@@ -488,7 +631,6 @@
   -moz-appearance: none;
 }
 
-
 .form-group input.has-prefix {
   padding-left: 6px;
 }
@@ -503,7 +645,6 @@
 .form-group input[type="date"] {
   padding-right: 12px;
 }
-
 
 .modal-footer {
   display: flex;
@@ -548,6 +689,18 @@
   box-shadow: 0 2px 8px rgba(30, 58, 138, 0.3);
 }
 
+/* ========== NO GAMES - FIXED ========== */
+.no-games {
+  padding: 40px;
+  text-align: center;
+  color: #94A3B8;
+}
+
+.no-games p {
+  margin: 0;
+  font-size: 14px;
+}
+
 /* ========== LOADING & ERROR STATES ========== */
 .loading-spinner {
   min-height: calc(100vh - 56px);
@@ -555,11 +708,9 @@
   align-items: center;
   justify-content: center;
   gap: 12px;
-
   font-size: 16px;
   font-weight: 600;
   color: #3B82F6;
-
   background: transparent;
   border-radius: 16px;
 }
@@ -674,235 +825,167 @@
   background: #FBBF24;
 }
 
-/* ========== RESPONSIVE ========== */
-@media (max-width: 1024px) {
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
+/* ============================================
+   VIEW MODAL - COMPLETE STYLES
+   ============================================ */
 
-@media (max-width: 768px) {
-  .games-container {
-    padding: 16px;
-  }
-
-  .games-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .header-title h1 {
-    font-size: 22px;
-  }
-
-  .stats-grid {
-    gap: 12px;
-  }
-
-  .stat-card {
-    padding: 14px;
-  }
-
-  .stat-info p {
-    font-size: 22px;
-  }
-
-  .stat-icon {
-    font-size: 28px;
-  }
-
-  .games-table th,
-  .games-table td {
-    padding: 10px 12px;
-    font-size: 12px;
-  }
-
-  .actions-cell {
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .action-edit,
-  .action-delete {
-    width: 100%;
-    text-align: center;
-    justify-content: center;
-  }
-
-  .modal-content {
-    width: 95%;
-    margin: 16px;
-  }
-
-  .modal-header h2 {
-    font-size: 16px;
-  }
-}
-
-@media (max-width: 480px) {
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .games-table th,
-  .games-table td {
-    padding: 8px 10px;
-    font-size: 11px;
-  }
-}
-
-/* ========== ADDITIONAL STAT CARD COLORS ========== */
-.stat-card.red {
-  border-left: 4px solid #EF4444;
-}
-
-.stat-card.orange {
-  border-left: 4px solid #F59E0B;
-}
-
-.stat-card.green {
-  border-left: 4px solid #10B981;
-}
-
-/* ========== ENHANCED TABLE STYLES ========== */
-.games-table-wrapper {
-  overflow-x: auto;
-}
-
-.games-table {
-  min-width: 800px;
-}
-
-.games-table th {
-  white-space: nowrap;
-}
-
-.games-table td {
-  vertical-align: top;
-}
-
-.game-id {
-  font-weight: 700;
-  color: #1E3A8A;
-  font-size: 13px;
-}
-
-.game-title .title-wrapper {
+/* Modal Overlay */
+#viewModalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(6px);
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  animation: viewModalFadeIn 0.25s ease;
 }
 
-.game-title .title {
-  font-weight: 600;
-  color: #1E3A8A;
-  font-size: 14px;
+@keyframes viewModalFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
-.game-title .bonus-info {
-  font-size: 11px;
-  color: #64748B;
-  background: #F1F5F9;
-  padding: 2px 8px;
-  border-radius: 12px;
-  width: fit-content;
-}
-
-.game-datetime {
-  font-size: 12px;
-  color: #64748B;
-  white-space: nowrap;
-}
-
-.tickets-info {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.tickets-info .total {
-  font-weight: 600;
-  color: #1E3A8A;
-}
-
-.tickets-info .cycle {
-  font-size: 11px;
-  color: #64748B;
-}
-
-.price-info {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.price-info .price {
-  font-weight: 600;
-  color: #059669;
-}
-
-.price-info .commission {
-  font-size: 11px;
-  color: #64748B;
-}
-
-.winners-count {
-  font-weight: 600;
-  color: #D97706;
-  text-align: center;
-}
-
-/* ========== VIEW BUTTON ========== */
-.action-view {
-  background: #059669;
-  color: white;
-}
-
-.action-view:hover {
-  background: #047857;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 6px rgba(5, 150, 105, 0.3);
-}
-
-.actions-cell {
-  flex-wrap: wrap;
-}
-
-.action-view,
-.action-edit,
-.action-delete {
-  white-space: nowrap;
-}
-
-/* ========== VIEW MODAL STYLES ========== */
-.modal-content.view-modal {
-  max-width: 900px;
+/* Modal Content */
+#viewModalContent {
+  background: #ffffff;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 920px;
   max-height: 90vh;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  animation: viewModalSlideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
 }
 
-.modal-icon-box.view {
-  background: rgba(255, 255, 255, 0.2);
+@keyframes viewModalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Modal Header */
+#viewModalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  background: linear-gradient(135deg, #1E3A8A, #2a5298);
+  border-bottom: 3px solid rgba(255, 215, 0, 0.3);
+  flex-shrink: 0;
+}
+
+#viewModalHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+#viewModalIconBox {
+  width: 44px;
+  height: 44px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  flex-shrink: 0;
+  font-size: 22px;
+}
+
+#viewModalHeader h2 {
+  margin: 0 0 2px;
   font-size: 18px;
+  color: #ffffff;
+  font-weight: 700;
+  line-height: 1.2;
 }
 
-.modal-body.view-body {
+#viewModalHeader p {
+  margin: 0;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+#viewModalClose {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  cursor: pointer;
+  color: #ffffff;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s ease;
+  flex-shrink: 0;
+  font-size: 20px;
+}
+
+#viewModalClose:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: rotate(90deg);
+}
+
+/* Modal Body */
+#viewModalBody {
   padding: 24px;
-  max-height: 60vh;
   overflow-y: auto;
+  flex: 1;
 }
 
-.game-details-grid {
+#viewModalBody::-webkit-scrollbar {
+  width: 6px;
+}
+
+#viewModalBody::-webkit-scrollbar-track {
+  background: #F1F5F9;
+  border-radius: 3px;
+}
+
+#viewModalBody::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 3px;
+}
+
+#viewModalBody::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+/* Game Details Grid */
+#gameDetailsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
 }
 
+/* Detail Cards */
 .detail-card {
   background: #F8FAFC;
   border: 1px solid #E2E8F0;
   border-radius: 12px;
-  padding: 16px;
+  padding: 16px 18px;
+  transition: all 0.2s ease;
+}
+
+.detail-card:hover {
+  border-color: #3B82F6;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.08);
 }
 
 .detail-card h4 {
@@ -931,230 +1014,129 @@
 .detail-row span:first-child {
   color: #64748B;
   font-weight: 500;
+  font-size: 12px;
 }
 
 .detail-row span:last-child {
-  color: #1E3A8A;
+  color: #0F172A;
   font-weight: 600;
   text-align: right;
+  font-size: 13px;
 }
 
+/* ========== PRIZES SECTION - FIXED ========== */
 .prizes-card {
-  grid-column: 1 / -1;
+  grid-column: 1 / -1 !important;
 }
 
 .prizes-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(2, 1fr);  /* Exactly 2 columns */
   gap: 12px;
   margin-top: 8px;
 }
 
 .prize-item {
-  background: white;
+  background: #ffffff;
   border: 1px solid #E2E8F0;
-  border-radius: 8px;
-  padding: 12px;
+  border-radius: 10px;
+  padding: 14px 16px;
+  transition: all 0.2s ease;
+}
+
+.prize-item:hover {
+  border-color: #3B82F6;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
 }
 
 .prize-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
+  background-color: linear-gradient(135deg, #667eea 0%, #43aeef 100%);
 }
 
+/* ===== FIXED: PRIZE NAME COLOR ===== */
 .prize-name {
   font-weight: 600;
-  color: #1E3A8A;
+  color: white;  /* Fixed: Dark blue instead of white */
+  font-size: 14px;
+}
+
+.prize-status {
   font-size: 12px;
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: 12px;
 }
 
 .prize-status.active {
-  color: #059669;
+  background: #DCFCE7;
+  color: #16A34A;
 }
 
 .prize-status.inactive {
-  color: #EF4444;
+  background: #FEE2E2;
+  color: #DC2626;
 }
 
 .prize-details {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  font-size: 11px;
+  font-size: 12px;
   color: #64748B;
 }
 
 .prize-details span {
   display: flex;
   justify-content: space-between;
+  padding: 2px 0;
 }
 
-/* ========== RESPONSIVE ENHANCEMENTS ========== */
-@media (max-width: 768px) {
-  .games-table {
-    min-width: 600px;
-  }
-
-  .modal-content.view-modal {
-    max-width: 95%;
-    max-height: 85vh;
-  }
-
-  .game-details-grid {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-
-  .prizes-list {
-    grid-template-columns: 1fr;
-  }
-
-  .action-view,
-  .action-edit,
-  .action-delete {
-    font-size: 11px;
-    padding: 4px 8px;
-  }
+.prize-details span span:last-child {
+  color: #0F172A;
+  font-weight: 500;
 }
 
-@media (max-width: 480px) {
-  .games-table {
-    min-width: 500px;
-  }
-
-  .title-wrapper .title {
-    font-size: 12px;
-  }
-
-  .title-wrapper .bonus-info {
-    font-size: 10px;
-  }
-}
-/* ========== TABLE WRAPPER FIXES ========== */
-.tickets-wrapper,
-.price-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.tickets-info,
-.price-info {
-  vertical-align: top;
-}
-/* ========== ID-BASED MODAL STYLES (NO CLASS OVERLAP) ========== */
-
-/* View Modal */
-#viewModalOverlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.55);
-  backdrop-filter: blur(4px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  padding: 16px;
-  animation: fadeIn 0.2s ease;
-}
-
-#viewModalContent {
-  background: white;
-  border-radius: 16px;
-  width: 100%;
-  max-width: 900px;
-  max-height: 90vh;
-  overflow-y: auto;
-  animation: slideIn 0.25s ease;
-  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.18);
-}
-
-#viewModalHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 20px;
-  background: #1E3A8A;
-  gap: 12px;
-}
-
-#viewModalHeaderLeft {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-#viewModalIconBox {
-  width: 36px;
-  height: 36px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  flex-shrink: 0;
-  font-size: 18px;
-}
-
-#viewModalHeader h2 {
-  margin: 0 0 2px;
-  font-size: 15px;
-  color: white;
-  font-weight: 700;
-  line-height: 1.2;
-}
-
-#viewModalHeader p {
-  margin: 0;
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.65);
-}
-
-#viewModalClose {
-  background: rgba(255, 255, 255, 0.12);
-  border: none;
-  cursor: pointer;
-  color: white;
-  width: 30px;
-  height: 30px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  flex-shrink: 0;
-}
-
-#viewModalClose:hover {
-  background: rgba(255, 255, 255, 0.22);
-  transform: rotate(90deg);
-}
-
-#viewModalBody {
-  padding: 24px;
-  max-height: 60vh;
-  overflow-y: auto;
-}
-
-#gameDetailsGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
-}
-
+/* Modal Footer */
 #viewModalFooter {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
-  padding: 14px 20px;
+  padding: 16px 24px;
   border-top: 1px solid #F1F5F9;
   background: #F8FAFC;
+  flex-shrink: 0;
 }
 
-/* Edit Modal */
+#viewModalFooter .btn-cancel {
+  padding: 10px 28px;
+  background: linear-gradient(135deg, #3B82F6, #1E3A8A);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+#viewModalFooter .btn-cancel:hover {
+  background: linear-gradient(135deg, #2563EB, #1E40AF);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
+}
+
+#viewModalFooter .btn-cancel:active {
+  transform: translateY(0);
+}
+
+/* ============================================
+   EDIT MODAL STYLES
+   ============================================ */
+
 #editModalOverlay {
   position: fixed;
   inset: 0;
@@ -1261,29 +1243,225 @@
   gap: 16px;
 }
 
-/* Responsive adjustments for modals */
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 1024px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  #gameDetailsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (max-width: 768px) {
+  .games-container {
+    padding: 16px;
+  }
+
+  .games-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .header-title h1 {
+    font-size: 22px;
+  }
+
+  .stats-grid {
+    gap: 12px;
+  }
+
+  .stat-card {
+    padding: 14px;
+  }
+
+  .stat-info p {
+    font-size: 22px;
+  }
+
+  .stat-icon {
+    font-size: 28px;
+  }
+
+  .games-table {
+    min-width: 600px;
+  }
+
+  .games-table th,
+  .games-table td {
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+
+  .actions-cell {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .action-view,
+  .action-edit,
+  .action-delete {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+
   #viewModalContent {
     max-width: 95%;
-    max-height: 85vh;
+    max-height: 95vh;
+    border-radius: 16px;
+  }
+
+  #viewModalHeader {
+    padding: 16px 18px;
+  }
+
+  #viewModalHeader h2 {
+    font-size: 16px;
+  }
+
+  #viewModalBody {
+    padding: 16px;
+  }
+
+  #gameDetailsGrid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  /* ===== FIXED: 1 column on tablet/mobile ===== */
+  .prizes-list {
+    grid-template-columns: 1fr;
+  }
+
+  #viewModalFooter {
+    padding: 14px 18px;
+  }
+
+  #viewModalFooter .btn-cancel {
+    padding: 8px 20px;
+    font-size: 13px;
+  }
+
+  #viewModalIconBox {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
   }
 
   #editModalContent {
     max-width: 95%;
   }
 
-  #gameDetailsGrid {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-
   .form-row {
     grid-template-columns: 1fr;
     gap: 12px;
   }
+
+  .modal-content {
+    width: 95%;
+    margin: 16px;
+  }
+
+  .modal-header h2 {
+    font-size: 16px;
+  }
 }
 
 @media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .games-table {
+    min-width: 500px;
+  }
+
+  .games-table th,
+  .games-table td {
+    padding: 8px 10px;
+    font-size: 11px;
+  }
+
+  .title-wrapper .title {
+    font-size: 12px;
+  }
+
+  .title-wrapper .bonus-info {
+    font-size: 10px;
+  }
+
+  #viewModalHeader {
+    padding: 12px 14px;
+  }
+
+  #viewModalHeader h2 {
+    font-size: 14px;
+  }
+
+  #viewModalHeader p {
+    font-size: 11px;
+  }
+
+  #viewModalBody {
+    padding: 12px;
+  }
+
+  .detail-card {
+    padding: 12px 14px;
+  }
+
+  .detail-row {
+    font-size: 12px;
+    padding: 6px 0;
+  }
+
+  .detail-row span:first-child {
+    font-size: 11px;
+  }
+
+  .detail-row span:last-child {
+    font-size: 12px;
+  }
+
+  /* ===== FIXED: 1 column on small mobile ===== */
+  .prizes-list {
+    grid-template-columns: 1fr;
+  }
+
+  .prize-item {
+    padding: 10px 12px;
+  }
+
+  #viewModalFooter {
+    padding: 10px 14px;
+  }
+
+  #viewModalFooter .btn-cancel {
+    padding: 6px 16px;
+    font-size: 12px;
+  }
+
+  #viewModalClose {
+    width: 30px;
+    height: 30px;
+    font-size: 16px;
+  }
+
+  #editModalBody {
+    padding: 16px;
+  }
+
+  #editModalHeader {
+    padding: 12px 16px;
+  }
+
   #viewModalBody,
   #editModalBody {
     padding: 16px;
@@ -1292,5 +1470,10 @@
   #viewModalHeader,
   #editModalHeader {
     padding: 12px 16px;
+  }
+
+  .form-group input {
+    height: 40px;
+    font-size: 13px;
   }
 }

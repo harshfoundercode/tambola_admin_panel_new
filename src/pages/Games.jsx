@@ -322,6 +322,8 @@ export default function Games() {
                 {filteredGames.map((game) => {
                   const statusBadge = getStatusBadge(game.status);
                   const isCompleted = game.status === "completed";
+                  const isLive = game.status === "live";
+                  const isUpcoming = game.status === "upcoming";
                   
                   return (
                     <tr key={game.game_id}>
@@ -352,6 +354,7 @@ export default function Games() {
                       </td>
                       <td className="winners-count">{game.total_winners || 0}</td>
                       <td className="actions-cell">
+                        {/* View button - Always visible */}
                         <button
                           className="action-view"
                           onClick={() => handleViewGame(game)}
@@ -360,8 +363,8 @@ export default function Games() {
                           👁️ View
                         </button>
                         
-                        {/* ✅ Edit button only for non-completed games */}
-                        {!isCompleted && (
+                        {/* ✅ Edit button - Only for upcoming games */}
+                        {isUpcoming && (
                           <button
                             className="action-edit"
                             onClick={() => {
@@ -374,7 +377,24 @@ export default function Games() {
                           </button>
                         )}
                         
-                        {/* Optional: Show disabled edit button for completed games with tooltip */}
+                        {/* ✅ Show disabled edit button for live games */}
+                        {isLive && (
+                          <button
+                            className="action-edit disabled"
+                            title="Cannot edit live games"
+                            disabled
+                            style={{
+                              opacity: 0.5,
+                              cursor: "not-allowed",
+                              background: "#e5e7eb",
+                              color: "#9ca3af"
+                            }}
+                          >
+                            ✏️ Edit
+                          </button>
+                        )}
+                        
+                        {/* ✅ Show disabled edit button for completed games */}
                         {isCompleted && (
                           <button
                             className="action-edit disabled"
@@ -451,10 +471,10 @@ export default function Games() {
                     <span>Ticket Price:</span>
                     <span>₹{selectedGame.ticket_price}</span>
                   </div>
-                  <div className="detail-row">
+                  {/* <div className="detail-row">
                     <span>Max Cycle:</span>
                     <span>{selectedGame.max_ticket_cycle}</span>
-                  </div>
+                  </div> */}
                   <div className="detail-row">
                     <span>Agent Commission:</span>
                     <span>{selectedGame.agent_commission}%</span>

@@ -14,7 +14,13 @@ export default function Login() {
   const [mobile, setMobile] = useState("");
   const [otp, setOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [forgotLoading, setForgotLoading] = useState(false);
+  
+  // Password visibility states for forgot password
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -35,9 +41,7 @@ export default function Login() {
 
       console.log("LOGIN RES:", res);
 
-      // Check if login is successful
       if (res && (res.success === true || res.data?.token || res.token)) {
-        // Get token from response
         const token = res.data?.token || res.token;
 
         if (token) {
@@ -70,6 +74,12 @@ export default function Login() {
       return;
     }
 
+    // Validate mobile number (10 digits)
+    if (!/^\d{10}$/.test(mobile)) {
+      toast.error("Enter a valid 10-digit mobile number");
+      return;
+    }
+
     try {
       setForgotLoading(true);
       const res = await sendOtpAPI({ mobile });
@@ -77,7 +87,14 @@ export default function Login() {
       console.log("OTP Response:", res);
 
       // Check multiple possible success conditions
-      if (res.success || res.status === 'success' || res.message?.includes('sent') || res.message?.includes('OTP')) {
+      const isSuccess = 
+        res?.success === true || 
+        res?.status === 'success' || 
+        res?.message === "OTP sent successfully" ||
+        res?.message?.toLowerCase()?.includes('sent') ||
+        res?.data?.mobile;
+
+      if (isSuccess) {
         toast.success(res?.message || "OTP sent successfully");
         setForgotStep(2);
       } else {
@@ -85,9 +102,10 @@ export default function Login() {
       }
     } catch (err) {
       console.error("OTP Error:", err);
-      // Even if there's an error, let's check if it's actually successful
-      if (err?.response?.status === 200 || err?.response?.data?.message?.includes('sent')) {
-        toast.success("OTP sent successfully");
+      if (err?.response?.data?.message?.includes('sent') || 
+          err?.response?.status === 200 ||
+          err?.response?.data?.data?.mobile) {
+        toast.success(err?.response?.data?.message || "OTP sent successfully");
         setForgotStep(2);
       } else {
         toast.error(err?.response?.data?.message || "Failed to send OTP");
@@ -98,8 +116,26 @@ export default function Login() {
   };
 
   const handleResetPassword = async () => {
-    if (!otp || !newPassword) {
-      toast.error("Enter OTP and new password");
+    if (!otp || !newPassword || !confirmPassword) {
+      toast.error("Please fill all fields");
+      return;
+    }
+
+    // Validate OTP (4 digits)
+    if (!/^\d{4}$/.test(otp)) {
+      toast.error("Enter a valid 4-digit OTP");
+      return;
+    }
+
+    // Validate password length
+    if (newPassword.length < 6) {
+      toast.error("Password must be at least 6 characters long");
+      return;
+    }
+
+    // Check if passwords match
+    if (newPassword !== confirmPassword) {
+      toast.error("Passwords do not match");
       return;
     }
 
@@ -112,26 +148,37 @@ export default function Login() {
         new_password: newPassword,
       });
 
-      console.log(res);
+      console.log("Reset Response:", res);
 
-      if (res?.message === "Password reset successfully") {
+      if (res?.message === "Password reset successfully" || res?.success) {
         toast.success("Password reset successfully!!");
-
-        setShowForgotModal(false);
-        setForgotStep(1);
-        setMobile("");
-        setOtp("");
-        setNewPassword("");
+        closeForgotModal();
       } else {
-        toast.error("Failed to reset password");
+        toast.error(res?.message || "Failed to reset password");
       }
     } catch (err) {
+      console.error("Reset Error:", err);
       toast.error(
         err?.response?.data?.message || "Failed to reset password"
       );
     } finally {
       setForgotLoading(false);
     }
+  };
+
+  const closeForgotModal = () => {
+    setShowForgotModal(false);
+    setForgotStep(1);
+    setMobile("");
+    setOtp("");
+    setNewPassword("");
+    setConfirmPassword("");
+    setShowNewPassword(false);
+    setShowConfirmPassword(false);
+  };
+
+  const handleBackToLogin = () => {
+    closeForgotModal();
   };
 
   return (
@@ -178,14 +225,15 @@ export default function Login() {
                 type="button"
                 className="password-toggle"
                 onClick={() => setShowPassword(!showPassword)}
+                aria-label="Toggle password visibility"
               >
-                👁️
+                {showPassword ? "🙈" : "👁️"}
               </button>
             </div>
             <div className="forgot-password">
               <span
                 onClick={() => setShowForgotModal(true)}
-                style={{ cursor: 'pointer', color: '#3B82F6', fontSize: '14px' }}
+                style={{ cursor: 'pointer', color: '#FFD700', fontSize: '14px' }}
               >
                 Forgot Password?
               </span>
@@ -200,78 +248,146 @@ export default function Login() {
 
       {/* Forgot Password Modal */}
       {showForgotModal && (
-        <div className="modal-overlay" onClick={() => setShowForgotModal(false)}>
+        <div className="modal-overlay" onClick={closeForgotModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h3>{forgotStep === 1 ? "Forgot Password" : "Reset Password"}</h3>
+              <h3>
+                {forgotStep === 1 
+                  ? "🔐 Forgot Password" 
+                  : "🔄 Reset Password"
+                }
+              </h3>
               <button
                 className="modal-close"
-                onClick={() => setShowForgotModal(false)}
+                onClick={closeForgotModal}
+                aria-label="Close modal"
               >
                 ×
               </button>
             </div>
 
-            {forgotStep === 1 ? (
-              <div className="modal-body">
-                <div className="input-group">
-                  <label>Mobile Number</label>
-                  <input
-                    type="tel"
-                    placeholder="Enter mobile number"
-                    value={mobile}
-                    onChange={(e) => setMobile(e.target.value)}
-                  />
-                </div>
-                <button
-                  className="modal-btn"
-                  onClick={handleSendOtp}
-                  disabled={forgotLoading}
-                >
-                  {forgotLoading ? "Sending..." : "Send OTP"}
-                </button>
-                {/* Temporary test button */}
-                <button
-                  className="modal-btn"
-                  onClick={() => setForgotStep(2)}
-                  style={{ marginTop: '8px', background: '#64748B' }}
-                >
-                  Test Reset UI
-                </button>
-              </div>
-            ) : (
-              <div className="modal-body">
-                <div className="input-group">
-                  <label>Mobile: {mobile}</label>
-                </div>
-                <div className="input-group">
-                  <label>Enter OTP</label>
-                  <input
-                    type="text"
-                    placeholder="Enter 4-digit OTP"
-                    value={otp}
-                    onChange={(e) => setOtp(e.target.value)}
-                    maxLength="4"
-                  />
-                </div>
-                <div className="input-group">
-                  <label>New Password</label>
-                  <input
-                    type="password"
-                    placeholder="Enter new password"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                  />
-                </div>
-                <button
-                  className="modal-btn"
-                  onClick={handleResetPassword}
-                  disabled={forgotLoading}
-                >
-                  {forgotLoading ? "Updating..." : "Update Password"}
-                </button>
-              </div>
-            )}
+            <div className="modal-body">
+              {forgotStep === 1 ? (
+                // Step 1: Send OTP
+                <>
+                  <p className="modal-description">
+                    <span className="emoji">📱</span> Enter your registered mobile number to receive an OTP
+                  </p>
+                  <div className="input-group">
+                    <label>📞 Mobile Number</label>
+                    <input
+                      type="tel"
+                      placeholder="Enter 10-digit mobile number"
+                      value={mobile}
+                      onChange={(e) => setMobile(e.target.value.replace(/\D/g, ''))}
+                      maxLength="10"
+                      autoFocus
+                    />
+                  </div>
+                  <button
+                    className="modal-btn"
+                    onClick={handleSendOtp}
+                    disabled={forgotLoading || !mobile}
+                  >
+                    {forgotLoading ? (
+                      <>
+                        <span className="spinner"></span> Sending...
+                      </>
+                    ) : (
+                      "📨 Send OTP"
+                    )}
+                  </button>
+                  <button
+                    className="modal-btn-secondary"
+                    onClick={handleBackToLogin}
+                  >
+                    ← Back to Login
+                  </button>
+                </>
+              ) : (
+                // Step 2: Reset Password
+                <>
+                  <p className="modal-description">
+                    <span className="emoji">✅</span> OTP sent to <strong>{mobile}</strong>
+                  </p>
+                  <div className="input-group">
+                    <label>🔑 Enter OTP</label>
+                    <input
+                      type="text"
+                      placeholder="Enter 4-digit OTP"
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
+                      maxLength="4"
+                      autoFocus
+                    />
+                  </div>
+                  <div className="input-group">
+                    <label>🔒 New Password</label>
+                    <div className="password-input-wrapper">
+                      <input
+                        type={showNewPassword ? "text" : "password"}
+                        placeholder="Min 6 characters"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                      />
+                      <button
+                        type="button"
+                        className="password-toggle-modal"
+                        onClick={() => setShowNewPassword(!showNewPassword)}
+                        aria-label="Toggle password visibility"
+                      >
+                        {showNewPassword ? "🙈" : "👁️"}
+                      </button>
+                    </div>
+                  </div>
+                  <div className="input-group">
+                    <label>✅ Confirm Password</label>
+                    <div className="password-input-wrapper">
+                      <input
+                        type={showConfirmPassword ? "text" : "password"}
+                        placeholder="Re-enter new password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                      />
+                      <button
+                        type="button"
+                        className="password-toggle-modal"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        aria-label="Toggle password visibility"
+                      >
+                        {showConfirmPassword ? "🙈" : "👁️"}
+                      </button>
+                    </div>
+                  </div>
+                  <button
+                    className="modal-btn"
+                    onClick={handleResetPassword}
+                    disabled={forgotLoading || !otp || !newPassword || !confirmPassword}
+                  >
+                    {forgotLoading ? (
+                      <>
+                        <span className="spinner"></span> Updating...
+                      </>
+                    ) : (
+                      "🔄 Update Password"
+                    )}
+                  </button>
+                  <button
+                    className="modal-btn-secondary"
+                    onClick={() => {
+                      setForgotStep(1);
+                      setOtp("");
+                      setNewPassword("");
+                      setConfirmPassword("");
+                      setShowNewPassword(false);
+                      setShowConfirmPassword(false);
+                    }}
+                  >
+                    ← Back
+                  </button>
+                </>
+              )}
+            </div>
           </div>
         </div>
       )}
