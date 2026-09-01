@@ -14,7 +14,7 @@
 //   const [verifyFilter, setVerifyFilter] = useState("all");
 //   const [showKycModal, setShowKycModal] = useState(false);
 //   const [kycData, setKycData] = useState(null);
-//   const [kycLoading, setKycLoading] = useState(false);
+//   const [kycLoading, setKycLoading] = useState({}); // Changed to object for individual loading states
   
 //   // New state for payment status counts
 //   const [paymentStatus, setPaymentStatus] = useState({
@@ -67,7 +67,9 @@
 //   };
 
 //   const handleViewKyc = async (userId) => {
-//     setKycLoading(true);
+//     // Set loading for specific user
+//     setKycLoading(prev => ({ ...prev, [userId]: true }));
+    
 //     try {
 //       console.log("Fetching KYC for user ID:", userId);
 //       const response = await getUserKycAPI(userId);
@@ -83,7 +85,8 @@
 //       console.error("Error fetching KYC:", err);
 //       toast.error("Failed to load KYC details: " + (err.message || "Unknown error"));
 //     } finally {
-//       setKycLoading(false);
+//       // Clear loading for specific user
+//       setKycLoading(prev => ({ ...prev, [userId]: false }));
 //     }
 //   };
 
@@ -568,6 +571,9 @@
 //               {filteredData.length > 0 ? (
 //                 filteredData.map((item, index) => {
 //                   const pendingCount = item.manual_payment_count?.pending || 0;
+//                   // Check if this specific user's KYC is loading
+//                   const isKycLoading = kycLoading[item.user_id] || false;
+                  
 //                   return (
 //                     <tr key={item.user_id}>
 //                       <td>{index + 1}</td>
@@ -600,8 +606,12 @@
 //                       <td>
 //                         <div className="action-buttons">
 //                           <button className="view-btn" onClick={() => setSelectedPlayer(item)}>View</button>
-//                           <button className="kyc-btn" onClick={() => handleViewKyc(item.user_id)} disabled={kycLoading}>
-//                             {kycLoading ? "Loading..." : "View KYC"}
+//                           <button 
+//                             className="kyc-btn" 
+//                             onClick={() => handleViewKyc(item.user_id)} 
+//                             disabled={isKycLoading}
+//                           >
+//                             {isKycLoading ? "Loading..." : "View KYC"}
 //                           </button>
 //                           {/* ✅ View Transaction button with pending count */}
 //                           <button 
@@ -669,7 +679,10 @@ function PlayerDetails() {
   const [verifyFilter, setVerifyFilter] = useState("all");
   const [showKycModal, setShowKycModal] = useState(false);
   const [kycData, setKycData] = useState(null);
-  const [kycLoading, setKycLoading] = useState({}); // Changed to object for individual loading states
+  const [kycLoading, setKycLoading] = useState({});
+  
+  // New state for pending filter
+  const [statusFilter, setStatusFilter] = useState("all");
   
   // New state for payment status counts
   const [paymentStatus, setPaymentStatus] = useState({
@@ -831,15 +844,23 @@ function PlayerDetails() {
     navigate(`/user-transaction-history?userId=${userId}&userName=${encodeURIComponent(userName)}`);
   };
 
+  // Updated filteredData with pending filter
   const filteredData = data.filter((item) => {
     const fullName = `${item.first_name} ${item.last_name}`.toLowerCase();
     const matchesSearch = fullName.includes(searchTerm.toLowerCase()) ||
       item.phone?.includes(searchTerm) ||
       item.referral_code?.toLowerCase().includes(searchTerm.toLowerCase());
+    
     const matchesVerify = verifyFilter === "all" ||
       (verifyFilter === "verified" && item.is_verified) ||
       (verifyFilter === "unverified" && !item.is_verified);
-    return matchesSearch && matchesVerify;
+    
+    // Check pending status filter
+    const hasPending = (item.manual_payment_count?.pending || 0) > 0;
+    const matchesPending = statusFilter === "all" || 
+      (statusFilter === "pending" && hasPending);
+    
+    return matchesSearch && matchesVerify && matchesPending;
   });
 
   // Focus textarea when reject modal opens
@@ -1130,6 +1151,12 @@ function PlayerDetails() {
             <div className="stat-value">{data.filter(d => !d.is_verified).length}</div>
             <div className="stat-label">Unverified</div>
           </div>
+          <div className="stat-card pending-stat">
+            <div className="stat-value" style={{ color: '#d97706' }}>
+              {data.filter(d => (d.manual_payment_count?.pending || 0) > 0).length}
+            </div>
+            <div className="stat-label">⏳ Pending Transactions</div>
+          </div>
         </div>
       </div>
 
@@ -1186,11 +1213,32 @@ function PlayerDetails() {
             <button
               key={f}
               className={`filter-tab ${verifyFilter === f ? "active" : ""}`}
-              onClick={() => setVerifyFilter(f)}
+              onClick={() => {
+                setVerifyFilter(f);
+                // Reset pending filter when changing verification filter
+                setStatusFilter("all");
+              }}
             >
               {f === "all" ? "All" : f === "verified" ? "Verified" : "Unverified"}
             </button>
           ))}
+          <button
+            className={`filter-tab pending-tab ${statusFilter === "pending" ? "active" : ""}`}
+            onClick={() => {
+              setStatusFilter(statusFilter === "pending" ? "all" : "pending");
+              // Reset verification filter when toggling pending
+              if (statusFilter !== "pending") {
+                setVerifyFilter("all");
+              }
+            }}
+          >
+            ⏳ Pending
+            {data.filter(d => (d.manual_payment_count?.pending || 0) > 0).length > 0 && (
+              <span className="pending-count-badge">
+                {data.filter(d => (d.manual_payment_count?.pending || 0) > 0).length}
+              </span>
+            )}
+          </button>
         </div>
       </div>
 
@@ -1230,7 +1278,7 @@ function PlayerDetails() {
                   const isKycLoading = kycLoading[item.user_id] || false;
                   
                   return (
-                    <tr key={item.user_id}>
+                    <tr key={item.user_id} className={pendingCount > 0 ? "has-pending-row" : ""}>
                       <td>{index + 1}</td>
                       <td className="player-name">{item.first_name} {item.last_name}</td>
                       <td>{item.phone}</td>
@@ -1268,7 +1316,7 @@ function PlayerDetails() {
                           >
                             {isKycLoading ? "Loading..." : "View KYC"}
                           </button>
-                          {/* ✅ View Transaction button with pending count */}
+                          {/* View Transaction button with pending count */}
                           <button 
                             className={`transaction-btn ${pendingCount > 0 ? 'has-pending' : ''}`} 
                             onClick={() => handleViewTransaction(item.user_id, `${item.first_name} ${item.last_name}`)}
