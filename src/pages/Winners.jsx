@@ -81,7 +81,10 @@ const fetchWinners = async (selectedGameId = "") => {
 
   // Stats calculations
   const totalWinners = winners.length;
-  const totalPrizeDistributed = winners.reduce((sum, w) => sum + w.prize, 0);
+  const totalPrizeDistributed = winners.reduce(
+  (sum, w) => sum + (Number(w.prize) || 0),
+  0
+);
   const claimedWinners = winners.filter(w => w.status === "Claimed").length;
   const pendingWinners = winners.filter(w => w.status === "Pending").length;
   const avgPrize = totalWinners > 0 ? Math.round(totalPrizeDistributed / totalWinners) : 0;
