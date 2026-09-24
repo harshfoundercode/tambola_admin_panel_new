@@ -30,15 +30,18 @@ const getGameStatus = (game) => {
       return { status: "live", label: "🔴 LIVE", className: "status-live" };
     case "upcoming":
       return { status: "upcoming", label: "⏳ UPCOMING", className: "status-pending" };
+    case "paused":
+      return { status: "paused", label: "⏸️ PAUSED", className: "status-paused" };
     default:
       return { status: "unknown", label: "❓ UNKNOWN", className: "status-error" };
   }
 };
 
-const formatGame = (game) => {
+const formatGame = (game, status = game.status) => {
   const formatted = {
     ...game,
-    gameStatus: getGameStatus(game),
+    status,
+    gameStatus: getGameStatus({ ...game, status }),
     formattedDate: game.start_datetime
       ? new Date(game.start_datetime).toLocaleDateString()
       : "No Date Set",
@@ -51,6 +54,24 @@ const formatGame = (game) => {
   };
   console.log("📦 Formatted game:", formatted.game_id, formatted.title);
   return formatted;
+};
+
+const getRoundDisplayStatus = (game, statusData) => {
+  const { called_numbers = [], is_running, game_status, round_status } = statusData;
+
+  if (called_numbers.length >= TOTAL_NUMBERS || round_status === "completed") {
+    return "completed";
+  }
+
+  if (is_running === true || game_status === "live" || round_status === "live") {
+    return "live";
+  }
+
+  if (round_status === "paused" || called_numbers.length > 0) {
+    return "paused";
+  }
+
+  return game.status === "upcoming" ? "upcoming" : "paused";
 };
 
 // ─── component ──────────────────────────────────────────────────────────────
@@ -123,7 +144,23 @@ export default function LiveGame() {
       const response = await getAllGamesAPI();
       console.log("📥 Games API Response:", response);
       if (response.success && response.data?.games) {
-        const formattedGames = response.data.games.map(formatGame);
+        const formattedGames = await Promise.all(response.data.games.map(async (game) => {
+          try {
+            const roundResponse = await getCurrentRoundAPI(game.game_id);
+            const roundId = roundResponse.data?.round_id;
+
+            if (!roundId) return formatGame(game);
+
+            const statusResponse = await getGameStatusAPI(roundId);
+            if (statusResponse.success && statusResponse.data) {
+              return formatGame(game, getRoundDisplayStatus(game, statusResponse.data));
+            }
+          } catch (err) {
+            console.warn(`⚠️ Could not load round status for game ${game.game_id}:`, err);
+          }
+
+          return formatGame(game);
+        }));
         console.log("✅ Games loaded:", formattedGames.length);
         setAllGames(formattedGames);
       } else {
@@ -148,6 +185,7 @@ export default function LiveGame() {
         const status = game.status || "upcoming";
         if (activeTab === "live") return status === "live";
         if (activeTab === "upcoming") return status === "upcoming";
+        if (activeTab === "paused") return status === "paused";
         if (activeTab === "completed") return status === "completed";
         return true;
       });
@@ -166,11 +204,12 @@ export default function LiveGame() {
   }, [allGames, activeTab, searchTerm]);
 
   const getTabCounts = useCallback(() => {
-    const counts = { all: allGames.length, live: 0, upcoming: 0, completed: 0 };
+    const counts = { all: allGames.length, live: 0, upcoming: 0, paused: 0, completed: 0 };
     allGames.forEach(game => {
       const status = game.status || "upcoming";
       if (status === "live") counts.live++;
       else if (status === "upcoming") counts.upcoming++;
+      else if (status === "paused") counts.paused++;
       else if (status === "completed") counts.completed++;
     });
     return counts;
@@ -1578,6 +1617,12 @@ export default function LiveGame() {
               ⏳ Upcoming <span className="tab-count upcoming">{tabCounts.upcoming}</span>
             </button>
             <button
+              className={`tab-btn ${activeTab === "paused" ? "active" : ""}`}
+              onClick={() => setActiveTab("paused")}
+            >
+              ⏸️ Paused <span className="tab-count paused">{tabCounts.paused}</span>
+            </button>
+            <button
               className={`tab-btn ${activeTab === "completed" ? "active" : ""}`}
               onClick={() => setActiveTab("completed")}
             >
@@ -1620,22 +1665,23 @@ export default function LiveGame() {
                 const status = game.status || "upcoming";
                 const isLive = status === "live";
                 const isUpcoming = status === "upcoming";
+                const isPaused = status === "paused";
                 const isCompleted = status === "completed";
 
                 return (
                   <div
                     key={game.game_id}
-                    className={`game-selector-card ${isLive ? "live-card" : isUpcoming ? "upcoming-card" : "completed-card"}`}
+                    className={`game-selector-card ${isLive ? "live-card" : isUpcoming ? "upcoming-card" : isPaused ? "paused-card" : "completed-card"}`}
                     onClick={() => handleGameSelect(game.game_id)}
                   >
                     <div className="game-selector-icon">
-                      {isLive ? "🔴" : isUpcoming ? "⏳" : "✅"}
+                      {isLive ? "🔴" : isUpcoming ? "⏳" : isPaused ? "⏸️" : "✅"}
                     </div>
                     <div className="game-selector-info">
                       <h3>
                         {game.title || "Untitled"}
                         <span className={`game-status-badge status-${status}`}>
-                          {isLive ? "🔴 LIVE" : isUpcoming ? "⏳ UPCOMING" : "✅ COMPLETED"}
+                          {isLive ? "🔴 LIVE" : isUpcoming ? "⏳ UPCOMING" : isPaused ? "⏸️ PAUSED" : "✅ COMPLETED"}
                         </span>
                       </h3>
                       <p>
@@ -1666,6 +1712,7 @@ export default function LiveGame() {
               Total: {allGames.length} games |
               Live: {tabCounts.live} |
               Upcoming: {tabCounts.upcoming} |
+              Paused: {tabCounts.paused} |
               Completed: {tabCounts.completed}
             </span>
             <button
